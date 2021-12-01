@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>org.mvnsearch.jetbrains.plugins.rsocket-jetbrains-plugin</id>
+    <name>RSocket Requests In HTTP Client</name>
+    <category>Microservices</category>
+    <vendor email="libing.chen@gmail.com">linux_china</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+    <!--suppress PluginXmlValidity -->
+    <dependencies>
+        <plugin id="com.jetbrains.restClient"/>
+    </dependencies>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <httpClient.RequestExecutionSupport implementation="org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequestExecutionSupport"/>
+    </extensions>
+
+</idea-plugin>
