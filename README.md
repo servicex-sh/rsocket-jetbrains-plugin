@@ -20,7 +20,9 @@ Content-Type: application/json
 * extra routing as query: `127.0.0.1:42252/com.example.service.HelloService.hello?e=xxx`
                                   
 # Http Headers
-
+             
+* Host: localhost:42252
+* Location: region-1
 * Content-Type: application/json
 * Metadata-Type: application/json
 * Metadata: base64-string for composite metadata or text
