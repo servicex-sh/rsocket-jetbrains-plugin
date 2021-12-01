@@ -13,7 +13,8 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
 
     override fun psiToCommonRequest(requestPsiPointer: SmartPsiElementPointer<HttpRequest>, substitutor: HttpRequestVariableSubstitutor): RSocketRequest {
         val httpRequest = requestPsiPointer.element
-        return RSocketRequest(httpRequest?.getHttpUrl(substitutor), httpRequest?.httpMethod, httpRequest?.requestBody?.text, httpRequest?.headerFieldList)
+        val headers = httpRequest?.headerFieldList?.associate { it.name.lowercase() to it.getValue(substitutor) }
+        return RSocketRequest(httpRequest?.getHttpUrl(substitutor), httpRequest?.httpMethod, httpRequest?.requestBody?.text, headers)
     }
 
     override fun toExternalFormInner(request: RSocketRequest, fileName: String?): String {
