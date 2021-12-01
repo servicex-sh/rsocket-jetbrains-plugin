@@ -23,6 +23,7 @@ Content-Type: application/json
 
 * Content-Type: application/json
 * Metadata-Type: application/json
+* Metadata: base64-string
 * Accept: application/json
 * Authorization: Bearer <token>
 * Pragma: no-cache
