@@ -9,7 +9,22 @@ import com.intellij.openapi.fileTypes.PlainTextFileType
 class RSocketBodyFileHint(override val fileExtensionHint: String?, override val fileNameHint: String?, override val fileTypeHint: FileType?) : CommonClientBodyFileHint {
 
     companion object {
-        val TEXT = RSocketBodyFileHint("txt", "rsocket", PlainTextFileType.INSTANCE)
-        val JSON = RSocketBodyFileHint("json", "rsocket", JsonFileType.INSTANCE)
+        
+        fun jsonBodyFileHint(fileName: String): RSocketBodyFileHint {
+            return if (fileName.endsWith(".json")) {
+                RSocketBodyFileHint("json", fileName, JsonFileType.INSTANCE)
+            } else {
+                RSocketBodyFileHint("json", "${fileName}.json", JsonFileType.INSTANCE)
+            }
+        }
+
+        fun textBodyFileHint(fileName: String): RSocketBodyFileHint {
+            return if (fileName.endsWith(".txt")) {
+                RSocketBodyFileHint("txt", fileName, PlainTextFileType.INSTANCE)
+            } else {
+                RSocketBodyFileHint("txt", "${fileName}.txt", PlainTextFileType.INSTANCE)
+            }
+        }
+
     }
 }
