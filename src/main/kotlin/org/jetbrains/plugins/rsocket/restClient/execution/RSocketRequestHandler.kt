@@ -32,7 +32,11 @@ class RSocketRequestHandler : RequestHandler<RSocketRequest> {
                     onBufferOverflow = BufferOverflow.DROP_OLDEST
                 )
                 val textStream = CommonClientResponseBody.TextStream(shared, RSocketBodyFileHint.TEXT)
-                Flux.just(Chunk("first\n"), Chunk("second\n"), Chunk("third\n"), CommonClientResponseBody.TextStream.Message.ConnectionClosed.End).delayElements(Duration.ofSeconds(1))
+                Flux.just(Chunk("first\n"), Chunk("second\n"), Chunk("third\n"))
+                    .delayElements(Duration.ofSeconds(1))
+                    .doFinally {
+                        shared.tryEmit(CommonClientResponseBody.TextStream.Message.ConnectionClosed.End);
+                    }
                     .subscribe {
                         shared.tryEmit(it)
                     }
