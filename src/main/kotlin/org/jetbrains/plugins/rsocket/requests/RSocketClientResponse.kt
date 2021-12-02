@@ -2,12 +2,18 @@ package org.jetbrains.plugins.rsocket.requests
 
 import com.intellij.httpClient.execution.common.CommonClientResponse
 import com.intellij.httpClient.execution.common.CommonClientResponseBody
+import com.intellij.ide.highlighter.XmlFileType
 import com.intellij.json.JsonFileType
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.PlainTextFileType
+import com.intellij.openapi.fileTypes.UserBinaryFileType
 
 @Suppress("UnstableApiUsage")
-class RSocketClientResponse(override var executionTime: Long?, private val responseBody: CommonClientResponseBody = CommonClientResponseBody.Empty()) : CommonClientResponse {
+class RSocketClientResponse(
+    private val responseBody: CommonClientResponseBody = CommonClientResponseBody.Empty(),
+    private val dataMimeType: String = "text/plain",
+    override var executionTime: Long? = 0
+) : CommonClientResponse {
     override val body: CommonClientResponseBody
         get() = responseBody
 
@@ -17,7 +23,15 @@ class RSocketClientResponse(override var executionTime: Long?, private val respo
                 return JsonFileType.INSTANCE
             }
         }
-        return PlainTextFileType.INSTANCE
+        return if (dataMimeType == "application/json") {
+            PlainTextFileType.INSTANCE
+        } else if (dataMimeType.contains("text")) {
+            PlainTextFileType.INSTANCE
+        } else if (dataMimeType.contains("xml")) {
+            XmlFileType.INSTANCE
+        } else {
+            UserBinaryFileType.INSTANCE
+        }
     }
 
     override val statusPresentation: String
