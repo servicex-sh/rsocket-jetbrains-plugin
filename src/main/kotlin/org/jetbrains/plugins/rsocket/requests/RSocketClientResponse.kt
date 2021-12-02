@@ -12,6 +12,8 @@ import com.intellij.openapi.fileTypes.UserBinaryFileType
 class RSocketClientResponse(
     private val responseBody: CommonClientResponseBody = CommonClientResponseBody.Empty(),
     private val dataMimeType: String = "text/plain",
+    private val status: String = "OK",
+    private val error: String? = null,
     override var executionTime: Long? = 0
 ) : CommonClientResponse {
     override val body: CommonClientResponseBody
@@ -35,11 +37,15 @@ class RSocketClientResponse(
     }
 
     override val statusPresentation: String
-        get() = "OK"
+        get() = status
 
     override val presentationHeader: String
         get() {
-            return "RSocket Payload Metadata\n"
+            return if (status == "OK") {
+                "RSocket/1.0 200 OK\n"
+            } else {
+                "RSocket/1.0 ERROR\n${(error ?: "")}\n"
+            }
         }
 
     override val presentationFooter: String
