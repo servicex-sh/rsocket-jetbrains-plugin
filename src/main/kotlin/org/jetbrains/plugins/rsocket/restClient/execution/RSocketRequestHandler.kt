@@ -1,10 +1,10 @@
 package org.jetbrains.plugins.rsocket.restClient.execution
 
 import com.intellij.httpClient.execution.common.CommonClientResponse
+import com.intellij.httpClient.execution.common.CommonClientResponseBody
 import com.intellij.httpClient.execution.common.RequestHandler
 import com.intellij.httpClient.execution.common.RunContext
 import org.jetbrains.plugins.rsocket.requests.RSocketRequestManager
-
 
 @Suppress("UnstableApiUsage")
 class RSocketRequestHandler : RequestHandler<RSocketRequest> {
@@ -25,7 +25,13 @@ class RSocketRequestHandler : RequestHandler<RSocketRequest> {
                 rsocketRequestManager.requestStream(request)
             }
             else -> {
-                RSocketClientResponse(0)
+                object : CommonClientResponse {
+                    override val body: CommonClientResponseBody
+                        get() = CommonClientResponseBody.Empty()
+                    override var executionTime: Long?
+                        get() = 0
+                        set(value) {}
+                }
             }
         }
     }
