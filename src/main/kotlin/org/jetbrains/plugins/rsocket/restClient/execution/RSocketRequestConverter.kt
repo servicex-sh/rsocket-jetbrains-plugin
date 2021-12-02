@@ -3,6 +3,7 @@ package org.jetbrains.plugins.rsocket.restClient.execution
 import com.intellij.httpClient.execution.common.RequestConverter
 import com.intellij.httpClient.http.request.HttpRequestVariableSubstitutor
 import com.intellij.httpClient.http.request.psi.HttpRequest
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.SmartPsiElementPointer
 
 
@@ -12,7 +13,10 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
     override val requestType: Class<RSocketRequest> get() = RSocketRequest::class.java
 
     override fun psiToCommonRequest(requestPsiPointer: SmartPsiElementPointer<HttpRequest>, substitutor: HttpRequestVariableSubstitutor): RSocketRequest {
-        val httpRequest = requestPsiPointer.element
+        var httpRequest: HttpRequest? = null
+        ApplicationManager.getApplication().runReadAction {
+            httpRequest = requestPsiPointer.element
+        }
         val headers = httpRequest?.headerFieldList?.associate { it.name.lowercase() to it.getValue(substitutor) }
         var requestType = httpRequest?.httpMethod
         if (requestType == "RSOCKET") {
