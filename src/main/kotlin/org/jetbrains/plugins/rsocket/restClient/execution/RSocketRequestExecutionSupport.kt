@@ -8,7 +8,7 @@ import com.intellij.httpClient.execution.common.RequestHandler
 @Suppress("UnstableApiUsage")
 class RSocketRequestExecutionSupport : RequestExecutionSupport<RSocketRequest> {
     companion object {
-        val RSOCKET_REQUEST_TYPES = listOf("RSOCKET", "RPC", "FNF", "STREAM")
+        val RSOCKET_REQUEST_TYPES = listOf("RSOCKET", "RPC", "FNF", "STREAM", "M_PUSH")
     }
 
     override fun canProcess(requestContext: RequestContext): Boolean {
