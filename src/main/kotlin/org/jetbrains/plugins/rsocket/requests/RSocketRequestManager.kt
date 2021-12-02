@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.rsocket.requests
 
+import com.intellij.httpClient.execution.common.CommonClientBodyFileHint
 import com.intellij.httpClient.execution.common.CommonClientResponse
 import com.intellij.httpClient.execution.common.CommonClientResponseBody
 import com.intellij.openapi.Disposable
@@ -23,7 +24,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         val jsonText = """
             {"id": 1, "nick": "linux_china" }
         """.trimIndent()
-        return RSocketClientResponse(10, CommonClientResponseBody.Text(jsonText, RSocketBodyFileHint.JSON))
+        return RSocketClientResponse(10, CommonClientResponseBody.Text(jsonText, bodyFileHint(rsocketRequest)))
     }
 
     fun fireAndForget(rsocketRequest: RSocketRequest): CommonClientResponse {
@@ -35,7 +36,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             replay = 1,
             onBufferOverflow = BufferOverflow.DROP_OLDEST
         )
-        val textStream = CommonClientResponseBody.TextStream(shared, RSocketBodyFileHint.TEXT)
+        val textStream = CommonClientResponseBody.TextStream(shared, bodyFileHint(rsocketRequest))
             .withConnectionDisposable {
                 //todo close rsocket connection
             }
@@ -56,6 +57,17 @@ class RSocketRequestManager(private val project: Project) : Disposable {
 
     fun metadataPush(rsocketRequest: RSocketRequest): CommonClientResponse {
         return RSocketClientResponse(111)
+    }
+
+    private fun bodyFileHint(request: RSocketRequest): CommonClientBodyFileHint {
+        val acceptMimeType = request.acceptMimeType
+        val dataType = request.dataMimeTyp
+        val fileName = "rsocket-${request.httpMethod}-${request.routingMetadata()[0]}"
+        return if ("application/json" == acceptMimeType || "application/json" == dataType) {
+            RSocketBodyFileHint.jsonBodyFileHint(fileName)
+        } else {
+            RSocketBodyFileHint.textBodyFileHint(fileName)
+        }
     }
 
 }
