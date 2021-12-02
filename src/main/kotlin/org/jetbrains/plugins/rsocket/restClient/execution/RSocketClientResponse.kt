@@ -25,18 +25,7 @@ class RSocketClientResponse(override var executionTime: Long?, private val respo
 
     override val presentationHeader: String
         get() {
-            // return payload information or exception message
-            return when (body) {
-                is CommonClientResponseBody.Text -> {
-                    (body as CommonClientResponseBody.Text).content + "\n"
-                }
-                is CommonClientResponseBody.Empty -> {
-                    ""
-                }
-                else -> {
-                    throw IllegalStateException("Cannot get string content, because body is not text")
-                }
-            }
+            return "RSocket Payload Metadata\n"
         }
 
     override val presentationFooter: String
