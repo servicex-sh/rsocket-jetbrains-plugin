@@ -24,11 +24,11 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             {"id": 1, "nick": "linux_china" }
         """.trimIndent()
         val dataMimeType = rsocketRequest.acceptMimeType ?: defaultDataMimeType
-        return RSocketClientResponse(10, CommonClientResponseBody.Text(jsonText, bodyFileHint(rsocketRequest)), dataMimeType)
+        return RSocketClientResponse(CommonClientResponseBody.Text(jsonText, bodyFileHint(rsocketRequest)), dataMimeType)
     }
 
     fun fireAndForget(rsocketRequest: RSocketRequest): CommonClientResponse {
-        return RSocketClientResponse(111)
+        return RSocketClientResponse()
     }
 
     fun requestStream(rsocketRequest: RSocketRequest): CommonClientResponse {
@@ -53,11 +53,11 @@ class RSocketRequestManager(private val project: Project) : Disposable {
                 shared.tryEmit(it)
             }
         val dataMimeType = rsocketRequest.acceptMimeType ?: defaultDataMimeType
-        return RSocketClientResponse(10, textStream, dataMimeType)
+        return RSocketClientResponse(textStream, dataMimeType)
     }
 
     fun metadataPush(rsocketRequest: RSocketRequest): CommonClientResponse {
-        return RSocketClientResponse(111)
+        return RSocketClientResponse()
     }
 
     private fun bodyFileHint(request: RSocketRequest): CommonClientBodyFileHint {
