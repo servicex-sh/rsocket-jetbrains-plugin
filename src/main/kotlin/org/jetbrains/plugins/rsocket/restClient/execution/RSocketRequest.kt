@@ -52,4 +52,8 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
         }
         return routing
     }
+
+    fun acceptMimeTypeHint(): String {
+        return acceptMimeType ?: dataMimeTyp
+    }
 }
