@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.rsocket.restClient.execution
 
 import com.intellij.httpClient.execution.common.CommonClientRequest
+import com.intellij.util.queryParameters
 import java.net.URI
 
 
@@ -37,5 +38,18 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
         authorization = headers?.get("authorization")
         userAgent = headers?.get("user-agent")
         acceptMimeType = headers?.get("accept")
+    }
+
+    fun routingMetadata(): List<String> {
+        var path = rsocketURI.path
+        if (path == null || path == "/") {
+            path = ""
+        }
+        val routing = mutableListOf(path);
+        val params = rsocketURI.queryParameters
+        if (params.isNotEmpty()) {
+            params.forEach { (key, value) -> routing.add("${key}=${value}") }
+        }
+        return routing
     }
 }
