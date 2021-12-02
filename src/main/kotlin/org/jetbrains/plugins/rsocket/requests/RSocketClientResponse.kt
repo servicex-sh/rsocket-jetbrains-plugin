@@ -1,4 +1,4 @@
-package org.jetbrains.plugins.rsocket.restClient.execution
+package org.jetbrains.plugins.rsocket.requests
 
 import com.intellij.httpClient.execution.common.CommonClientResponse
 import com.intellij.httpClient.execution.common.CommonClientResponseBody
