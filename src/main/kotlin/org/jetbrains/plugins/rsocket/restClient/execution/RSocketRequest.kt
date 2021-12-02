@@ -9,6 +9,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     val rsocketURI: URI
     val dataMimeTyp: String
     val metadataMimeTyp: String
+    val acceptMimeType: String?
     val authorization: String?
     val userAgent: String?
 
@@ -35,5 +36,6 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
         metadataMimeTyp = headers?.get("metadata-type") ?: "message/x.rsocket.composite-metadata.v0"
         authorization = headers?.get("authorization")
         userAgent = headers?.get("user-agent")
+        acceptMimeType = headers?.get("accept")
     }
 }
