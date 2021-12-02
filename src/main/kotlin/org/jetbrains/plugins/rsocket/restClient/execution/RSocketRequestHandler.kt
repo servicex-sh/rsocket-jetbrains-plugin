@@ -5,15 +5,10 @@ import com.intellij.httpClient.execution.common.CommonClientResponseBody
 import com.intellij.httpClient.execution.common.CommonClientResponseBody.TextStream.Message.Chunk
 import com.intellij.httpClient.execution.common.RequestHandler
 import com.intellij.httpClient.execution.common.RunContext
-import com.intellij.util.concurrency.AppExecutorUtil
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.plus
-import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import reactor.core.publisher.Flux
+import java.time.Duration
 
 
 @Suppress("UnstableApiUsage")
@@ -32,11 +27,15 @@ class RSocketRequestHandler : RequestHandler<RSocketRequest> {
                 RSocketClientResponse(0)
             }
             "STREAM" -> {
-                val flow = Flux.just(Chunk("first"), Chunk("second"), Chunk("third")).asFlow();
-                val dispatcher = AppExecutorUtil.getAppExecutorService().asCoroutineDispatcher()
-                val scope = CoroutineScope(dispatcher).plus(CoroutineName("RSocket stream call"))
-                val messages = flow.shareIn(scope, SharingStarted.Lazily, 100)
-                val textStream = CommonClientResponseBody.TextStream(messages, RSocketBodyFileHint.TEXT);
+                val shared = MutableSharedFlow<CommonClientResponseBody.TextStream.Message>(
+                    replay = 1,
+                    onBufferOverflow = BufferOverflow.DROP_OLDEST
+                )
+                val textStream = CommonClientResponseBody.TextStream(shared, RSocketBodyFileHint.TEXT)
+                Flux.just(Chunk("first\n"), Chunk("second\n"), Chunk("third\n"), CommonClientResponseBody.TextStream.Message.ConnectionClosed.End).delayElements(Duration.ofSeconds(1))
+                    .subscribe {
+                        shared.tryEmit(it)
+                    }
                 RSocketClientResponse(10, textStream)
             }
             else -> {
