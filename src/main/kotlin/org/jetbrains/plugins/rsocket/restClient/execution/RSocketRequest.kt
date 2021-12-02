@@ -41,9 +41,9 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     }
 
     fun routingMetadata(): List<String> {
-        var path = rsocketURI.path
-        if (path == null || path == "/") {
-            path = ""
+        var path = rsocketURI.path ?: ""
+        if (path.startsWith("/")) {
+            path = path.substring(1)
         }
         val routing = mutableListOf(path);
         val params = rsocketURI.queryParameters
