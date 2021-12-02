@@ -18,7 +18,12 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
     }
 
     override fun toExternalFormInner(request: RSocketRequest, fileName: String?): String {
-        return ""
+        val builder = StringBuilder()
+        builder.append("### rsocket request").append("\n")
+        builder.append("RSOCKET ${request.rsocketURI}").append("\n")
+        builder.append("\n");
+        builder.append(request.textToSend ?: "")
+        return builder.toString()
     }
 
 }
