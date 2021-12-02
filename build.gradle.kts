@@ -33,8 +33,13 @@ intellij {
 }
 
 dependencies {
+    implementation(platform("io.projectreactor:reactor-bom:2020.0.13"))
     implementation("io.rsocket:rsocket-core:1.1.1")
     implementation("io.rsocket:rsocket-transport-netty:1.1.1")
+}
+
+configurations.implementation {
+    exclude(group = "org.slf4j", module = "slf4j-api")
 }
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
