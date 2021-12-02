@@ -35,6 +35,7 @@ intellij {
 dependencies {
     implementation("io.rsocket:rsocket-core:1.1.1")
     implementation("io.rsocket:rsocket-transport-netty:1.1.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.5.2")
 }
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
