@@ -8,14 +8,13 @@ import com.intellij.openapi.project.Project
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.jetbrains.plugins.rsocket.restClient.execution.RSocketBodyFileHint
-import org.jetbrains.plugins.rsocket.restClient.execution.RSocketClientResponse
 import org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequest
 import reactor.core.publisher.Flux
 import java.time.Duration
 
 @Suppress("UnstableApiUsage")
 class RSocketRequestManager(private val project: Project) : Disposable {
-
+    private val defaultDataMimeType = "application/json"
     override fun dispose() {
     }
 
@@ -24,7 +23,8 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         val jsonText = """
             {"id": 1, "nick": "linux_china" }
         """.trimIndent()
-        return RSocketClientResponse(10, CommonClientResponseBody.Text(jsonText, bodyFileHint(rsocketRequest)))
+        val dataMimeType = rsocketRequest.acceptMimeType ?: defaultDataMimeType
+        return RSocketClientResponse(10, CommonClientResponseBody.Text(jsonText, bodyFileHint(rsocketRequest)), dataMimeType)
     }
 
     fun fireAndForget(rsocketRequest: RSocketRequest): CommonClientResponse {
@@ -52,7 +52,8 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             .subscribe {
                 shared.tryEmit(it)
             }
-        return RSocketClientResponse(10, textStream)
+        val dataMimeType = rsocketRequest.acceptMimeType ?: defaultDataMimeType
+        return RSocketClientResponse(10, textStream, dataMimeType)
     }
 
     fun metadataPush(rsocketRequest: RSocketRequest): CommonClientResponse {
@@ -60,10 +61,9 @@ class RSocketRequestManager(private val project: Project) : Disposable {
     }
 
     private fun bodyFileHint(request: RSocketRequest): CommonClientBodyFileHint {
-        val acceptMimeType = request.acceptMimeType
-        val dataType = request.dataMimeTyp
+        val acceptMimeType = request.acceptMimeTypeHint()
         val fileName = "rsocket-${request.httpMethod}-${request.routingMetadata()[0]}"
-        return if ("application/json" == acceptMimeType || "application/json" == dataType) {
+        return if ("application/json" == acceptMimeType) {
             RSocketBodyFileHint.jsonBodyFileHint(fileName)
         } else {
             RSocketBodyFileHint.textBodyFileHint(fileName)
