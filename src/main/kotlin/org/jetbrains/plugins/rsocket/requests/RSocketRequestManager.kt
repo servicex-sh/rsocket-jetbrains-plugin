@@ -3,7 +3,6 @@ package org.jetbrains.plugins.rsocket.requests
 import com.intellij.httpClient.execution.common.CommonClientBodyFileHint
 import com.intellij.httpClient.execution.common.CommonClientResponse
 import com.intellij.httpClient.execution.common.CommonClientResponseBody
-import com.intellij.httpClient.execution.common.CommonClientResponseBody.TextStream
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.util.io.toByteArray
@@ -75,24 +74,24 @@ class RSocketRequestManager(private val project: Project) : Disposable {
                 clientRSocket!!.dispose()
             }
         }
-        val shared = MutableSharedFlow<TextStream.Message>(
-            replay = 1,
+        val shared = MutableSharedFlow<CommonClientResponseBody.TextStream.Message>(
+            replay = 1000,
             onBufferOverflow = BufferOverflow.DROP_OLDEST
         )
-        val textStream = TextStream(shared, bodyFileHint(rsocketRequest)).withConnectionDisposable(disposeRSocket)
+        val textStream = CommonClientResponseBody.TextStream(shared, bodyFileHint(rsocketRequest)).withConnectionDisposable(disposeRSocket)
         try {
             clientRSocket = createRSocket(rsocketRequest)
             clientRSocket.requestStream(createPayload(rsocketRequest))
                 .doFinally {
-                    shared.tryEmit(TextStream.Message.ConnectionClosed.End)
+                    shared.tryEmit(CommonClientResponseBody.TextStream.Message.ConnectionClosed.End)
+                    clientRSocket.dispose()
                 }
                 .doOnError {
-                    shared.tryEmit(TextStream.Message.ConnectionClosed.WithError(it))
+                    shared.tryEmit(CommonClientResponseBody.TextStream.Message.ConnectionClosed.WithError(it))
                 }
                 .subscribe {
-                    println("ooooo")
                     val data = convertPayloadText(dataMimeType, it)
-                    shared.tryEmit(TextStream.Message.Chunk(data))
+                    shared.tryEmit(CommonClientResponseBody.TextStream.Message.Chunk(data + "\n\n"))
                 }
         } catch (e: Exception) {
             return RSocketClientResponse(
