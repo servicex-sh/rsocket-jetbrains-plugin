@@ -33,7 +33,7 @@ Content-Type: application/json
 
 For more please refer https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
            
-**Attention**: According to [HTTP spec](https://stackoverflow.com/questions/9779860/using-json-string-in-the-http-header/40415268), 
+**Attention**: According to [HTTP spec](https://www.rfc-editor.org/rfc/rfc7230#section-3.2), 
 JSON may be used as HTTP header value, and some limitations: no "\r","\n", invisible or none-ASCII characters
 
 # Attentions
