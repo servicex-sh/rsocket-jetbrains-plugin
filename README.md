@@ -44,7 +44,12 @@ JSON may be used as HTTP header value, and some limitations: no "\r","\n", invis
 # todo
 
 * live templates for rsocket
+* Spring RSocket Broker support: `X-ServiceName: com.example.service.HelloService`
+* Alibaba RSocket Broker: `X-AliBroker: true`
+* Intention Action for @MessageMapping
 
 # References
 
 * RSocket: [https://rsocket.io/](https://rsocket.io/)
+* HTTP header fields: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields 
+* Message Headers: https://www.iana.org/assignments/message-headers/message-headers.xhtml
