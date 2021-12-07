@@ -6,13 +6,19 @@ import com.intellij.httpClient.execution.common.CommonClientResponseBody
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.util.io.toByteArray
-import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufAllocator
+import io.netty.buffer.CompositeByteBuf
 import io.netty.buffer.Unpooled
 import io.rsocket.Payload
 import io.rsocket.RSocket
+import io.rsocket.broker.common.Id
+import io.rsocket.broker.common.MimeTypes
+import io.rsocket.broker.common.Tags
+import io.rsocket.broker.frames.Address
+import io.rsocket.broker.frames.AddressFlyweight
+import io.rsocket.broker.frames.RouteSetupFlyweight
 import io.rsocket.core.RSocketConnector
-import io.rsocket.metadata.CompositeMetadataCodec
+import io.rsocket.metadata.CompositeMetadataCodec.encodeAndAddMetadata
 import io.rsocket.metadata.TaggingMetadataCodec
 import io.rsocket.metadata.WellKnownMimeType
 import io.rsocket.transport.ClientTransport
@@ -28,6 +34,8 @@ import java.util.*
 
 @Suppress("UnstableApiUsage")
 class RSocketRequestManager(private val project: Project) : Disposable {
+    private val appId = UUID.randomUUID().toString()
+
     override fun dispose() {
     }
 
@@ -138,11 +146,40 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         } else {
             WebsocketClientTransport.create(rsocketURI)
         }
+        var setupPayload: Payload? = null
+        if (rsocketRequest.headers != null) {
+            if (rsocketRequest.isAliBroker()) {
+                setupPayload = createSetupPayloadForAliBroker()
+            } else if (rsocketRequest.isSpringBroker()) {
+                setupPayload = createSetupPayloadForSpringBroker(Id.from(appId))
+            }
+        }
+        if (setupPayload == null) {
+            setupPayload = DefaultPayload.create(Unpooled.EMPTY_BUFFER)
+        }
         return RSocketConnector.create()
             .dataMimeType(rsocketRequest.dataMimeTyp)
             .metadataMimeType(rsocketRequest.metadataMimeTyp)
+            .setupPayload(setupPayload!!)
             .connect(clientTransport)
             .block()!!
+    }
+
+
+    private fun createSetupPayloadForSpringBroker(routeId: Id): Payload {
+        val allocator = ByteBufAllocator.DEFAULT
+        val routeSetup = RouteSetupFlyweight.encode(allocator, routeId, "rsocket-jetbrains-plugin", Tags.empty(), 0)
+        val setupMetadata: CompositeByteBuf = allocator.compositeBuffer()
+        encodeAndAddMetadata(setupMetadata, allocator, "", routeSetup)
+        return DefaultPayload.create(Unpooled.EMPTY_BUFFER, setupMetadata)
+    }
+
+    private fun createSetupPayloadForAliBroker(): Payload {
+        val allocator = ByteBufAllocator.DEFAULT
+        val setupMetadata: CompositeByteBuf = allocator.compositeBuffer()
+        val appInfo = """{"name": "rsocket-jetbrains-plugin"}""".toByteArray()
+        encodeAndAddMetadata(setupMetadata, allocator, "message/x.rsocket.application+json", Unpooled.wrappedBuffer(appInfo))
+        return DefaultPayload.create(Unpooled.EMPTY_BUFFER, setupMetadata)
     }
 
     private fun createPayload(rsocketRequest: RSocketRequest): Payload {
@@ -152,14 +189,17 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         } else {
             Unpooled.EMPTY_BUFFER
         }
+        if (rsocketRequest.isSpringBroker()) {
+            encodeAddressMetadata(Id.from(appId), compositeMetadataBuffer, rsocketRequest)
+        }
         return DefaultPayload.create(dataBuf, compositeMetadataBuffer)
     }
 
-    private fun compositeMetadata(rsocketRequest: RSocketRequest): ByteBuf {
+    private fun compositeMetadata(rsocketRequest: RSocketRequest): CompositeByteBuf {
         val compositeMetadataBuffer = ByteBufAllocator.DEFAULT.compositeBuffer()
         if (rsocketRequest.routingMetadata()[0].isNotEmpty()) {
             val routingMetaData = TaggingMetadataCodec.createTaggingContent(ByteBufAllocator.DEFAULT, rsocketRequest.routingMetadata())
-            CompositeMetadataCodec.encodeAndAddMetadata(
+            encodeAndAddMetadata(
                 compositeMetadataBuffer, ByteBufAllocator.DEFAULT,
                 WellKnownMimeType.MESSAGE_RSOCKET_ROUTING,
                 routingMetaData
@@ -174,6 +214,21 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         } else {
             Base64.getEncoder().encodeToString(payload.data.toByteArray())
         }
+    }
+
+    /**
+     * encode address metadata for Spring RSocket Broker
+     */
+    private fun encodeAddressMetadata(routeId: Id, metadataHolder: CompositeByteBuf, request: RSocketRequest) {
+        val builder: Address.Builder = Address.from(routeId)
+        request.headers?.forEach { (key, value) ->
+            if (key.startsWith("X-")) {
+                builder.with(key.substring(2), value)
+            }
+        }
+        val address = builder.build()
+        val byteBuf = AddressFlyweight.encode(ByteBufAllocator.DEFAULT, address.originRouteId, address.metadata, address.tags, address.flags)
+        encodeAndAddMetadata(metadataHolder, ByteBufAllocator.DEFAULT, MimeTypes.BROKER_FRAME_MIME_TYPE, byteBuf)
     }
 
 }
