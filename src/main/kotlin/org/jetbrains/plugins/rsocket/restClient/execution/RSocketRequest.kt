@@ -56,4 +56,12 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     fun acceptMimeTypeHint(): String {
         return acceptMimeType ?: dataMimeTyp
     }
+
+    fun isAliBroker(): Boolean {
+        return this.headers != null && this.headers.contains("X-AliBroker")
+    }
+
+    fun isSpringBroker(): Boolean {
+        return this.headers != null && this.headers.contains("X-ServiceName")
+    }
 }
