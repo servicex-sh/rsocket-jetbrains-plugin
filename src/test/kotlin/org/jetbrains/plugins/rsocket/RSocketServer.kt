@@ -15,6 +15,7 @@ fun main() {
     Hooks.onErrorDropped { }
     val closeableChannel = RSocketServer.create()
         .acceptor { setup: ConnectionSetupPayload, sendingSocket: RSocket ->
+            printCompositeMetadata(setup)
             Mono.just(object : RSocket {
                 override fun requestResponse(payload: Payload): Mono<Payload> {
                     printCompositeMetadata(payload)
