@@ -36,7 +36,7 @@ import kotlin.experimental.or
 
 @Suppress("UnstableApiUsage")
 class RSocketRequestManager(private val project: Project) : Disposable {
-    private val appId = UUID.randomUUID().toString()
+    private var appId = UUID.randomUUID().toString()
 
     override fun dispose() {
     }
@@ -169,10 +169,11 @@ class RSocketRequestManager(private val project: Project) : Disposable {
 
 
     private fun createSetupPayloadForSpringBroker(routeId: Id): Payload {
+        appId = UUID.randomUUID().toString()
         val allocator = ByteBufAllocator.DEFAULT
         val routeSetup = RouteSetupFlyweight.encode(allocator, routeId, "rsocket-jetbrains-plugin", Tags.empty(), 0)
         val setupMetadata: CompositeByteBuf = allocator.compositeBuffer()
-        encodeAndAddMetadata(setupMetadata, allocator, "message/x.rsocket.broker.frame.v0", routeSetup)
+        encodeAndAddMetadata(setupMetadata, allocator, MimeTypes.BROKER_FRAME_MIME_TYPE, routeSetup)
         return DefaultPayload.create(Unpooled.EMPTY_BUFFER, setupMetadata)
     }
 
@@ -229,12 +230,17 @@ class RSocketRequestManager(private val project: Project) : Disposable {
      */
     private fun encodeAddressMetadata(routeId: Id, metadataHolder: CompositeByteBuf, request: RSocketRequest) {
         val builder: Address.Builder = Address.from(routeId)
-        /*request.headers?.forEach { (key, value) ->
+        request.headers?.forEach { (key, value) ->
             if (key.startsWith("X-")) {
-                builder.with("io.rsocket.broker."+key.substring(2), value.trim())
+                val keyName = key.substring(2)
+                val knownKey = WellKnownKey.fromMimeType("io.rsocket.broker.$keyName")
+                if (knownKey != WellKnownKey.UNPARSEABLE_KEY) {
+                    builder.with(knownKey, value.trim())
+                } else {
+                    builder.with(keyName, value.trim())
+                }
             }
-        }*/
-        builder.with(WellKnownKey.SERVICE_NAME, "com.example.PongService")
+        }
         val address = builder.build()
         val byteBuf = AddressFlyweight.encode(ByteBufAllocator.DEFAULT, address.originRouteId, address.metadata, address.tags, address.flags)
         encodeAndAddMetadata(metadataHolder, ByteBufAllocator.DEFAULT, MimeTypes.BROKER_FRAME_MIME_TYPE, byteBuf)
