@@ -187,8 +187,12 @@ class RSocketRequestManager(private val project: Project) : Disposable {
 
     private fun createPayload(rsocketRequest: RSocketRequest): Payload {
         val compositeMetadataBuffer = compositeMetadata(rsocketRequest)
-        val dataBuf = if (rsocketRequest.textToSend != null) {
-            Unpooled.wrappedBuffer(rsocketRequest.textToSend.toByteArray())
+        var textToSend: String? = rsocketRequest.textToSend
+        val dataBuf = if (textToSend != null) {
+            if (rsocketRequest.dataMimeTyp == "application/json" && textToSend.startsWith("\"")) {
+                textToSend = textToSend.substring(1..textToSend.length - 2)
+            }
+            Unpooled.wrappedBuffer(textToSend.toByteArray())
         } else {
             Unpooled.EMPTY_BUFFER
         }
