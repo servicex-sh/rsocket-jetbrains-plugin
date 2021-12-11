@@ -14,6 +14,7 @@ import io.rsocket.RSocket
 import io.rsocket.broker.common.Id
 import io.rsocket.broker.common.MimeTypes
 import io.rsocket.broker.common.Tags
+import io.rsocket.broker.common.WellKnownKey
 import io.rsocket.broker.frames.Address
 import io.rsocket.broker.frames.AddressFlyweight
 import io.rsocket.broker.frames.RouteSetupFlyweight
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import org.jetbrains.plugins.rsocket.restClient.execution.RSocketBodyFileHint
 import org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequest
 import java.util.*
+import kotlin.experimental.or
 
 
 @Suppress("UnstableApiUsage")
@@ -170,7 +172,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         val allocator = ByteBufAllocator.DEFAULT
         val routeSetup = RouteSetupFlyweight.encode(allocator, routeId, "rsocket-jetbrains-plugin", Tags.empty(), 0)
         val setupMetadata: CompositeByteBuf = allocator.compositeBuffer()
-        encodeAndAddMetadata(setupMetadata, allocator, "", routeSetup)
+        encodeAndAddMetadata(setupMetadata, allocator, "message/x.rsocket.broker.frame.v0", routeSetup)
         return DefaultPayload.create(Unpooled.EMPTY_BUFFER, setupMetadata)
     }
 
@@ -204,6 +206,12 @@ class RSocketRequestManager(private val project: Project) : Disposable {
                 WellKnownMimeType.MESSAGE_RSOCKET_ROUTING,
                 routingMetaData
             )
+            val dataType = WellKnownMimeType.fromString(rsocketRequest.dataMimeTyp);
+            encodeAndAddMetadata(
+                compositeMetadataBuffer, ByteBufAllocator.DEFAULT,
+                WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE,
+                Unpooled.wrappedBuffer(byteArrayOf(dataType.identifier.or(0x80.toByte())))
+            )
         }
         return compositeMetadataBuffer
     }
@@ -221,11 +229,12 @@ class RSocketRequestManager(private val project: Project) : Disposable {
      */
     private fun encodeAddressMetadata(routeId: Id, metadataHolder: CompositeByteBuf, request: RSocketRequest) {
         val builder: Address.Builder = Address.from(routeId)
-        request.headers?.forEach { (key, value) ->
+        /*request.headers?.forEach { (key, value) ->
             if (key.startsWith("X-")) {
-                builder.with(key.substring(2), value)
+                builder.with("io.rsocket.broker."+key.substring(2), value.trim())
             }
-        }
+        }*/
+        builder.with(WellKnownKey.SERVICE_NAME, "com.example.PongService")
         val address = builder.build()
         val byteBuf = AddressFlyweight.encode(ByteBufAllocator.DEFAULT, address.originRouteId, address.metadata, address.tags, address.flags)
         encodeAndAddMetadata(metadataHolder, ByteBufAllocator.DEFAULT, MimeTypes.BROKER_FRAME_MIME_TYPE, byteBuf)
