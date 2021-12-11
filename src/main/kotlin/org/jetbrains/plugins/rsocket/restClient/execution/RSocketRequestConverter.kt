@@ -17,7 +17,7 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
         ApplicationManager.getApplication().runReadAction {
             httpRequest = requestPsiPointer.element
         }
-        val headers = httpRequest?.headerFieldList?.associate { it.name.lowercase() to it.getValue(substitutor) }
+        val headers = httpRequest?.headerFieldList?.associate { it.name to it.getValue(substitutor) }
         var requestType = httpRequest?.httpMethod
         if (requestType == "RSOCKET") {
             requestType = "RPC"
