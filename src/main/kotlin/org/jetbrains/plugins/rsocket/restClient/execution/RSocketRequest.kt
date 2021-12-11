@@ -23,7 +23,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
                 if (URL.indexOf("/") > 0) { //contains host
                     tempUri = "tcp://$URL"
                 } else { // get host information from header
-                    val host = headers?.get("host") ?: "localhost"
+                    val host = headers?.get("Host") ?: "localhost"
                     tempUri = if (URL.startsWith("/")) {
                         "tcp://$host$URL"
                     } else {
@@ -33,11 +33,11 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
             }
         }
         rsocketURI = URI.create(tempUri)
-        dataMimeTyp = headers?.get("content-type") ?: "application/json"
-        metadataMimeTyp = headers?.get("metadata-type") ?: "message/x.rsocket.composite-metadata.v0"
-        authorization = headers?.get("authorization")
-        userAgent = headers?.get("user-agent")
-        acceptMimeType = headers?.get("accept")
+        dataMimeTyp = headers?.get("Content-Type") ?: "application/json"
+        metadataMimeTyp = headers?.get("Metadata-Type") ?: "message/x.rsocket.composite-metadata.v0"
+        authorization = headers?.get("Authorization")
+        userAgent = headers?.get("User-Agent")
+        acceptMimeType = headers?.get("Accept")
     }
 
     fun routingMetadata(): List<String> {
