@@ -1,0 +1,26 @@
+<templateSet group="RSocket">
+    <template name="rpc" value="RSOCKET com.example.UserService.findById&#10;Host: 127.0.0.1:42252&#10;Content-Type: application/json&#10;&#10;1$END$"
+              description="RSocket request/response" toReformat="false" toShortenFQNames="true">
+        <context>
+            <option name="REQUEST" value="true"/>
+        </context>
+    </template>
+    <template name="fnf" value="FNF com.example.UserService.fnf&#10;Host: 127.0.0.1:42252&#10;Content-Type: application/json&#10;&#10;1$END$" description="RSocket fireAndForget"
+              toReformat="false" toShortenFQNames="true">
+        <context>
+            <option name="REQUEST" value="true"/>
+        </context>
+    </template>
+    <template name="stream" value="STREAM com.example.UserService.findByType&#10;Host: 127.0.0.1:42252&#10;Content-Type: application/json&#10;&#10;1$END$"
+              description="RSocket request/stream" toReformat="false" toShortenFQNames="true">
+        <context>
+            <option name="REQUEST" value="true"/>
+        </context>
+    </template>
+    <template name="metadata" value="METADATA 127.0.0.1:42252&#10;Content-Type: application/json&#10;&#10;1$END$" description="RSocket MetadataPush" toReformat="false"
+              toShortenFQNames="true">
+        <context>
+            <option name="REQUEST" value="true"/>
+        </context>
+    </template>
+</templateSet>
