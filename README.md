@@ -4,52 +4,62 @@ RSocket plugin for JetBrains IDEs
 <!-- Plugin description -->
 **RSocket plugin** is a plugin for JetBrains IDE to execute RSocket requests in HTTP Client.
 
-```
-RPC 127.0.0.1:42252/com.example.service.HelloService.hello
-Content-Type: application/json
+The following features are available for RSocket:
 
-["linux_china"]
-```
+* Execute request/response, fireAndForget, request/Stream, metadataPush for RSocket
+* Live templates: rpc, fnf, stream, metadata
+* Spring Boot RSocket, Alibaba/Spring RSocket Broker support
 
 <!-- Plugin description end -->
 
-# RSocket url
+# RSocket requests demo
 
-* without schema means tcp connection
-* http schema means WebSocket connection
-* extra routing as query: `127.0.0.1:42252/com.example.service.HelloService.hello?e=xxx`
+```http request
+### rsocket request response for Spring Boot RSocket
+RSOCKET com.example.UserService.findById
+Host: 127.0.0.1:42252
+Content-Type: application/json
 
-# Http Headers
+1
 
-* Host: localhost:42252
+### Alibaba RSocket Broker
+RSOCKET com.alibaba.user.UserService.findById
+Host: 127.0.0.1:9999
+X-AliBroker: true
+Content-Type: application/json
+
+[2]
+
+### Spring RSocket Broker
+RSOCKET pong
+Host: 127.0.0.1:8001
+X-ServiceName: com.example.PongService
+Content-Type: application/json
+
+"ping"
+```
+
+# RSocket URI and Routing
+
+* without schema means tcp connection: `127.0.0.1:42252`
+* http schema means WebSocket connection: `http://127.0.0.1:8080/rsocket`
+* RSocket Routing:  path means first tag for routing, and query params for other tags `127.0.0.1:42252/com.example.service.HelloService.hello?e=xxx`
+
+# Http Headers for RSocket
+
+* Host: the target to connect by tcp `localhost:42252`
 * From: app information, such app name, ip, datacenter etc
-* Content-Type: application/json
-* Metadata-Type: application/json
-* Metadata: base64-string for composite metadata or text
-* Accept: application/json
+* Content-Type: data content type, and default is `application/json`
+* Metadata-Type: metadata type, and default is `message/x.rsocket.composite-metadata.v0`
+* Metadata: metadata for payload, and it should be base64-string for composite metadata
+* Accept: Metadata Payload for acceptable data MIME Type
 * Authorization: Bearer <token>
-* Pragma: no-cache
-* User-Agent: DemoApp/1.0.0
 
-For more please refer https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
-           
-**Attention**: According to [HTTP spec](https://www.rfc-editor.org/rfc/rfc7230#section-3.2), 
-JSON may be used as HTTP header value, and some limitations: no "\r","\n", invisible or none-ASCII characters
+# Todo
 
-# Attentions
-
-* projectService: XxxRequestsManager that sends requests to upstream
-* TextStream.withConnectionDisposable() to close the connection
-
-# todo
-
-* live templates for rsocket
-* Spring RSocket Broker support: `X-ServiceName: com.example.service.HelloService`
-* Alibaba RSocket Broker: `X-AliBroker: true`
+* rsc convert support
 * Intention Action for @MessageMapping
 
 # References
 
 * RSocket: [https://rsocket.io/](https://rsocket.io/)
-* HTTP header fields: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields 
-* Message Headers: https://www.iana.org/assignments/message-headers/message-headers.xhtml
