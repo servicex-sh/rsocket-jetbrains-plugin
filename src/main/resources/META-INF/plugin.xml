@@ -15,6 +15,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <projectService serviceImplementation="org.jetbrains.plugins.rsocket.requests.RSocketRequestManager"/>
         <httpClient.RequestExecutionSupport implementation="org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequestExecutionSupport"/>
+        <defaultLiveTemplates file="/liveTemplates/RSocket.xml"/>
     </extensions>
 
 </idea-plugin>
