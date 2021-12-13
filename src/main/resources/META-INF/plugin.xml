@@ -13,6 +13,7 @@
     </dependencies>
 
     <extensions defaultExtensionNs="com.intellij">
+        <projectService preload="true" serviceImplementation="org.jetbrains.plugins.rsocket.codeInsight.RSocketHeadersInspectionService"/>
         <projectService serviceImplementation="org.jetbrains.plugins.rsocket.requests.RSocketRequestManager"/>
         <httpClient.RequestExecutionSupport implementation="org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequestExecutionSupport"/>
         <defaultLiveTemplates file="/liveTemplates/RSocket.xml"/>
