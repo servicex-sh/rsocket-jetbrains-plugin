@@ -16,6 +16,7 @@
         <projectService serviceImplementation="org.jetbrains.plugins.rsocket.requests.RSocketRequestManager"/>
         <httpClient.RequestExecutionSupport implementation="org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequestExecutionSupport"/>
         <defaultLiveTemplates file="/liveTemplates/RSocket.xml"/>
+        <completion.contributor language="HTTP Request" implementationClass="org.jetbrains.plugins.rsocket.completion.RSocketRequestCompletionContributor"/>
     </extensions>
 
 </idea-plugin>
