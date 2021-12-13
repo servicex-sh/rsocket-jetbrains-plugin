@@ -2,6 +2,13 @@
 
 # RSocket plugin Changelog
 
+## [0.2.0]
+
+### Added
+
+- Add custom HTTP headers for RSocket
+- Code completion for RSocket headers
+
 ## [0.1.0]
 
 ### Added
