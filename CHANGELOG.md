@@ -8,6 +8,7 @@
 
 - Add custom HTTP headers for RSocket
 - Code completion for RSocket headers
+- Intention action to convert RSocket request to rsc CLI
 
 ## [0.1.0]
 
