@@ -1,0 +1,10 @@
+# clipboard: [
+# rsc --request --route=com.example.UserService.findById \
+#     --data=1 --debug tcp://127.0.0.1:42252
+# ]
+# clipboard: []
+RSOCKET com.example.UserService.findById
+Host: 127.0.0.1:42252
+Content-Type: application/json
+
+1
