@@ -9,6 +9,8 @@ The following features are available for RSocket:
 * Execute request/response, fireAndForget, request/Stream, metadataPush for RSocket
 * Live templates: rpc, fnf, stream, metadata
 * Spring Boot RSocket, Alibaba/Spring RSocket Broker support
+* Code completion for RSocket HTTP headers
+* Intention action to convert RSocket request to rsc CLI
 
 <!-- Plugin description end -->
 
@@ -57,7 +59,6 @@ Content-Type: application/json
 
 # Todo
 
-* rsc convert support
 * Intention Action for @MessageMapping
 
 # References
