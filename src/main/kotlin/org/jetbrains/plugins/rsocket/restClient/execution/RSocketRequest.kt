@@ -24,8 +24,8 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
                     tempUri = "tcp://$URL"
                 } else { // get host information from header
                     val host = headers?.get("Host") ?: "localhost"
-                    tempUri = if (URL.startsWith("/")) {
-                        "tcp://$host$URL"
+                    tempUri = if (host.contains("://")) {
+                        "$host/$URL"
                     } else {
                         "tcp://$host/$URL"
                     }
@@ -42,6 +42,9 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
 
     fun routingMetadata(): List<String> {
         var path = rsocketURI.path ?: ""
+        if (rsocketURI.scheme.startsWith("ws") && path.startsWith("/rsocket")) {
+            path = path.substring(0, 8)
+        }
         if (path.startsWith("/")) {
             path = path.substring(1)
         }
