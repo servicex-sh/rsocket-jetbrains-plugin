@@ -50,7 +50,7 @@ Content-Type: application/json
 
 # Http Headers for RSocket
 
-* Host: the target to connect by tcp `localhost:42252`
+* Host: the target to connect by tcp `localhost:42252` or by WS `ws://localhost:8080/rsocket`
 * From: app information, such app name, ip, datacenter etc
 * Content-Type: data content type, and default is `application/json`
 * Metadata-Type: metadata type, and default is `message/x.rsocket.composite-metadata.v0`
