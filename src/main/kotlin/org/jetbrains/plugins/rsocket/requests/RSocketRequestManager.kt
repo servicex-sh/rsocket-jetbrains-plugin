@@ -30,13 +30,19 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.jetbrains.plugins.rsocket.restClient.execution.RSocketBodyFileHint
 import org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequest
+import reactor.core.publisher.Hooks
 import java.util.*
 import kotlin.experimental.or
-
 
 @Suppress("UnstableApiUsage")
 class RSocketRequestManager(private val project: Project) : Disposable {
     private var appId = UUID.randomUUID().toString()
+
+    init {
+        Hooks.onErrorDropped {
+
+        }
+    }
 
     override fun dispose() {
     }
