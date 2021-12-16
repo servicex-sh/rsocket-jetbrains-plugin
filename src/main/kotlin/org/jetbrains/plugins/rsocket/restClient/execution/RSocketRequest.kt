@@ -21,7 +21,11 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
                 tempUri = URL.replace("http://", "ws://").replace("https://", "wss://")
             } else {
                 if (URL.indexOf("/") > 0) { //contains host
-                    tempUri = "tcp://$URL"
+                    tempUri = if (URL.contains("/rsocket")) {
+                        "ws://$URL"
+                    } else {
+                        "tcp://$URL"
+                    }
                 } else { // get host information from header
                     val host = headers?.get("Host") ?: "localhost"
                     tempUri = if (host.contains("://")) {
