@@ -2,6 +2,14 @@
 
 # RSocket plugin Changelog
 
+## [0.4.0]
+
+### Added
+ 
+- Add `Hooks.onErrorDropped` to suppress noisy warning
+- PSI read operations moved to application.runReadAction{} to suppress concurrent exception
+- Optimization for RSocket WebSocket URL, please use `Host: ws://localhost:8080/rsocket` for WS
+
 ## [0.3.0]
 
 ### Added
