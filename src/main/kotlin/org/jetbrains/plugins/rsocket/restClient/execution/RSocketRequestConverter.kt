@@ -13,16 +13,21 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
     override val requestType: Class<RSocketRequest> get() = RSocketRequest::class.java
 
     override fun psiToCommonRequest(requestPsiPointer: SmartPsiElementPointer<HttpRequest>, substitutor: HttpRequestVariableSubstitutor): RSocketRequest {
-        var httpRequest: HttpRequest? = null
+        var url = ""
+        var requestType = ""
+        var requestBody: String? = null
+        var headers: Map<String, String>? = null
         ApplicationManager.getApplication().runReadAction {
-            httpRequest = requestPsiPointer.element
+            val httpRequest = requestPsiPointer.element
+            url = httpRequest?.getHttpUrl(substitutor) ?: ""
+            headers = httpRequest?.headerFieldList?.associate { it.name to it.getValue(substitutor) }
+            requestType = httpRequest?.httpMethod!!
+            requestBody = httpRequest.requestBody?.text
         }
-        val headers = httpRequest?.headerFieldList?.associate { it.name to it.getValue(substitutor) }
-        var requestType = httpRequest?.httpMethod
         if (requestType == "RSOCKET") {
             requestType = "RPC"
         }
-        return RSocketRequest(httpRequest?.getHttpUrl(substitutor), requestType, httpRequest?.requestBody?.text, headers)
+        return RSocketRequest(url, requestType, requestBody, headers)
     }
 
     override fun toExternalFormInner(request: RSocketRequest, fileName: String?): String {
