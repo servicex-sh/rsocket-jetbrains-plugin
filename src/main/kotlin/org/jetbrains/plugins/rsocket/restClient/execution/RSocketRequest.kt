@@ -43,7 +43,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     fun routingMetadata(): List<String> {
         var path = rsocketURI.path ?: ""
         if (rsocketURI.scheme.startsWith("ws") && path.startsWith("/rsocket")) {
-            path = path.substring(0, 8)
+            path = path.substring(8)
         }
         if (path.startsWith("/")) {
             path = path.substring(1)
@@ -66,5 +66,11 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
 
     fun isSpringBroker(): Boolean {
         return this.headers != null && this.headers.contains("X-ServiceName")
+    }
+
+    fun getWebsocketRequestURI(): URI {
+        var connectionURL = rsocketURI.toString()
+        connectionURL = connectionURL.substring(0, connectionURL.indexOf("/rsocket") + 8)
+        return URI.create(connectionURL)
     }
 }

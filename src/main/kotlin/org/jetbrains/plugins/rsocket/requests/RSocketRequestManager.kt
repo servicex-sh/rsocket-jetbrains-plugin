@@ -146,7 +146,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         val clientTransport: ClientTransport = if (rsocketURI.scheme == "tcp") {
             TcpClientTransport.create(rsocketURI.host, rsocketURI.port)
         } else {
-            WebsocketClientTransport.create(rsocketURI)
+            WebsocketClientTransport.create(rsocketRequest.getWebsocketRequestURI())
         }
         var setupPayload: Payload? = null
         if (rsocketRequest.headers != null) {
