@@ -75,6 +75,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     fun getWebsocketRequestURI(): URI {
         var connectionURL = rsocketURI.toString()
         connectionURL = connectionURL.substring(0, connectionURL.indexOf("/rsocket") + 8)
+        connectionURL = connectionURL.replace("http://", "ws://").replace("https://", "wss://")
         return URI.create(connectionURL)
     }
 }
