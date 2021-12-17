@@ -59,7 +59,8 @@ Content-Type: application/json
 * Authorization: Bearer <token>
 
 # Todo
-               
+                 
+* Replace rsocket-java to rsocket-kotlin
 * endpoints for Spring Boot RSocket
 * codeInsight.lineMarkerProvider for @MessageMapping
 
