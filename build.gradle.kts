@@ -41,6 +41,9 @@ dependencies {
 
 configurations.implementation {
     exclude(group = "org.slf4j", module = "slf4j-api")
+    exclude(group = "io.netty", module = "netty-resolver-dns-native-macos")
+    exclude(group = "io.projectreactor.netty.incubator", module = "reactor-netty-incubator-quic")
+    exclude(group = "io.projectreactor.netty", module = "reactor-netty-http-brave")
 }
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
