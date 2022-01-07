@@ -10,6 +10,8 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     val rsocketURI: URI
     val dataMimeTyp: String
     val metadataMimeTyp: String
+    val setupData: String?
+    val setupMetadata: String?
     val acceptMimeType: String?
     val authorization: String?
     val userAgent: String?
@@ -42,6 +44,8 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
         authorization = headers?.get("Authorization")
         userAgent = headers?.get("User-Agent")
         acceptMimeType = headers?.get("Accept")
+        setupMetadata = headers?.get("Setup-Data")
+        setupData = headers?.get("Setup-Metadata")
     }
 
     fun routingMetadata(): List<String> {
