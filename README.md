@@ -54,12 +54,19 @@ Content-Type: application/json
 * From: app information, such app name, ip, datacenter etc
 * Content-Type: data content type, and default is `application/json`
 * Metadata-Type: metadata type, and default is `message/x.rsocket.composite-metadata.v0`
+* Setup-Metadata: Metadata for Setup payload
+* Setup-Data: Data for Setup payload
 * Metadata: metadata for payload, and it should be base64-string for composite metadata
 * Accept: Metadata Payload for acceptable data MIME Type
 * Authorization: Bearer <token>
 
+# Data format for Metadata and Data
+
+* Text style: `normal text`
+* Binary style: `data:application/octet-stream;base64,<base64-string>`
+
 # Todo
-                 
+
 * Replace rsocket-java to rsocket-kotlin
 * endpoints for Spring Boot RSocket
 * codeInsight.lineMarkerProvider for @MessageMapping
