@@ -2,6 +2,14 @@
 
 # RSocket plugin Changelog
 
+## [0.5.0]
+
+### Added
+ 
+- Add support for Metadata-Type with `application/json`
+- Add Setup-Data and Setup-Metadata RSocket headers
+- Data format for Metadata and Data: `normal text` or `data:application/octet-stream;base64,<base64-string>`
+
 ## [0.4.0]
 
 ### Added
