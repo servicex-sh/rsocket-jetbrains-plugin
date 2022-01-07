@@ -1,5 +1,7 @@
 package org.jetbrains.plugins.rsocket.requests
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.intellij.httpClient.execution.common.CommonClientBodyFileHint
 import com.intellij.httpClient.execution.common.CommonClientResponse
 import com.intellij.httpClient.execution.common.CommonClientResponseBody
@@ -37,6 +39,7 @@ import kotlin.experimental.or
 @Suppress("UnstableApiUsage")
 class RSocketRequestManager(private val project: Project) : Disposable {
     private var appId = UUID.randomUUID().toString()
+    private val objectMapper = ObjectMapper();
 
     init {
         Hooks.onErrorDropped {
@@ -123,7 +126,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             var clientRSocket: RSocket? = null
             try {
                 clientRSocket = createRSocket(rsocketRequest)
-                DefaultPayload.create(Unpooled.EMPTY_BUFFER, Unpooled.wrappedBuffer(rsocketRequest.textToSend.toByteArray()))
+                DefaultPayload.create(Unpooled.EMPTY_BUFFER, Unpooled.wrappedBuffer(rsocketRequest.body()))
                 clientRSocket.metadataPush(createPayload(rsocketRequest)).block()
             } catch (e: Exception) {
                 return RSocketClientResponse(
@@ -163,7 +166,17 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             }
         }
         if (setupPayload == null) {
-            setupPayload = DefaultPayload.create(Unpooled.EMPTY_BUFFER)
+            val metadata = if (rsocketRequest.setupMetadata == null) {
+                Unpooled.EMPTY_BUFFER
+            } else {
+                Unpooled.wrappedBuffer(rsocketRequest.textToBytes(rsocketRequest.setupMetadata))
+            }
+            val data = if (rsocketRequest.setupData == null) {
+                Unpooled.EMPTY_BUFFER
+            } else {
+                Unpooled.wrappedBuffer(rsocketRequest.textToBytes(rsocketRequest.setupData))
+            }
+            setupPayload = DefaultPayload.create(data, metadata)
         }
         return RSocketConnector.create()
             .dataMimeType(rsocketRequest.dataMimeTyp)
@@ -192,20 +205,17 @@ class RSocketRequestManager(private val project: Project) : Disposable {
     }
 
     private fun createPayload(rsocketRequest: RSocketRequest): Payload {
-        val compositeMetadataBuffer = compositeMetadata(rsocketRequest)
-        var textToSend: String? = rsocketRequest.textToSend
-        val dataBuf = if (textToSend != null) {
-            if (rsocketRequest.dataMimeTyp == "application/json" && textToSend.startsWith("\"")) {
-                textToSend = textToSend.substring(1..textToSend.length - 2)
+        return if (rsocketRequest.metadataMimeTyp == WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string) {
+            val dataBuf = Unpooled.wrappedBuffer(rsocketRequest.body())
+            val compositeMetadataBuffer = compositeMetadata(rsocketRequest)
+            if (rsocketRequest.isSpringBroker()) {
+                encodeAddressMetadata(Id.from(appId), compositeMetadataBuffer, rsocketRequest)
             }
-            Unpooled.wrappedBuffer(textToSend.toByteArray())
-        } else {
-            Unpooled.EMPTY_BUFFER
+            DefaultPayload.create(dataBuf, compositeMetadataBuffer)
+        } else { //json
+            val metadata = jsonMetadata(rsocketRequest)
+            DefaultPayload.create(rsocketRequest.body(), metadata.toByteArray())
         }
-        if (rsocketRequest.isSpringBroker()) {
-            encodeAddressMetadata(Id.from(appId), compositeMetadataBuffer, rsocketRequest)
-        }
-        return DefaultPayload.create(dataBuf, compositeMetadataBuffer)
     }
 
     private fun compositeMetadata(rsocketRequest: RSocketRequest): CompositeByteBuf {
@@ -225,6 +235,19 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             )
         }
         return compositeMetadataBuffer
+    }
+
+    private fun jsonMetadata(rsocketRequest: RSocketRequest): String {
+        val compositeMetadata = mutableMapOf<String, Any>()
+        if (rsocketRequest.routingMetadata()[0].isNotEmpty()) {
+            compositeMetadata[WellKnownMimeType.MESSAGE_RSOCKET_ROUTING.string] = rsocketRequest.routingMetadata()
+            compositeMetadata[WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE.string] = rsocketRequest.dataMimeTyp
+        }
+        if (rsocketRequest.metadata != null) {
+            val metadataJson = objectMapper.readValue<Map<String, Any>>(rsocketRequest.metadata)
+            compositeMetadata.putAll(metadataJson)
+        }
+        return objectMapper.writeValueAsString(compositeMetadata)
     }
 
     private fun convertPayloadText(dataMimeType: String, payload: Payload): String {
