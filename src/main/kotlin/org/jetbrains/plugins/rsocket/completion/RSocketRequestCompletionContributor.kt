@@ -41,6 +41,10 @@ class RSocketRequestCompletionContributor : CompletionContributor() {
                 } else {
                     result.addElement(PrioritizedLookupElement.withPriority(LookupElementBuilder.create("X-AliBroker"), 100.0))
                     result.addElement(PrioritizedLookupElement.withPriority(LookupElementBuilder.create("X-ServiceName"), 100.0))
+                    result.addElement(PrioritizedLookupElement.withPriority(LookupElementBuilder.create("Setup-Metadata"), 100.0))
+                    result.addElement(PrioritizedLookupElement.withPriority(LookupElementBuilder.create("Setup-Data"), 100.0))
+                    result.addElement(PrioritizedLookupElement.withPriority(LookupElementBuilder.create("Metadata-Type"), 100.0))
+                    result.addElement(PrioritizedLookupElement.withPriority(LookupElementBuilder.create("Metadata"), 100.0))
                 }
             }
         }
