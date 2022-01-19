@@ -18,6 +18,10 @@ class RSocketHeadersInspectionService(project: Project) {
             customHeaders.add("X-ClusterName")
             customHeaders.add("X-Endpoint-UUID")
             customHeaders.add("X-Endpoint-Ip")
+            customHeaders.add("Setup-Metadata")
+            customHeaders.add("Setup-Data")
+            customHeaders.add("Metadata-Type")
+            customHeaders.add("Metadata")
         }
     }
 }
