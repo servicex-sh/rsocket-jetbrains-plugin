@@ -7,8 +7,8 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import org.jetbrains.plugins.rsocket.RSOCKET_REQUEST_TYPES
 import org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequest
-import org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequestExecutionSupport
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
@@ -24,7 +24,7 @@ class RSocketRequestConvertToRscIntention : BaseElementAtCaretIntentionAction() 
 
     override fun isAvailable(project: Project, editor: Editor, element: PsiElement): Boolean {
         val httpRequest = PsiTreeUtil.getParentOfType(element, HttpRequest::class.java)
-        return httpRequest != null && RSocketRequestExecutionSupport.RSOCKET_REQUEST_TYPES.contains(httpRequest.httpMethod)
+        return httpRequest != null && RSOCKET_REQUEST_TYPES.contains(httpRequest.httpMethod)
     }
 
     override fun invoke(project: Project, editor: Editor, element: PsiElement) {
