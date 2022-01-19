@@ -4,12 +4,10 @@ import com.intellij.httpClient.execution.common.RequestContext
 import com.intellij.httpClient.execution.common.RequestConverter
 import com.intellij.httpClient.execution.common.RequestExecutionSupport
 import com.intellij.httpClient.execution.common.RequestHandler
+import org.jetbrains.plugins.rsocket.RSOCKET_REQUEST_TYPES
 
 @Suppress("UnstableApiUsage")
 class RSocketRequestExecutionSupport : RequestExecutionSupport<RSocketRequest> {
-    companion object {
-        val RSOCKET_REQUEST_TYPES = listOf("RSOCKET", "RPC", "FNF", "STREAM", "METADATA")
-    }
 
     override fun canProcess(requestContext: RequestContext): Boolean {
         return RSOCKET_REQUEST_TYPES.contains(requestContext.method)
