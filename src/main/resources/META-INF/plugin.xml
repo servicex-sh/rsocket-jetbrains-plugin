@@ -7,6 +7,7 @@
     <vendor email="libing.chen@gmail.com">linux_china</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends optional="true" config-file="rsocket-withJava.xml">com.intellij.java</depends>
     <!--suppress PluginXmlValidity -->
     <dependencies>
         <plugin id="com.jetbrains.restClient"/>
@@ -17,7 +18,7 @@
         <projectService serviceImplementation="org.jetbrains.plugins.rsocket.requests.RSocketRequestManager"/>
         <httpClient.RequestExecutionSupport implementation="org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequestExecutionSupport"/>
         <defaultLiveTemplates file="/liveTemplates/RSocket.xml"/>
-        <completion.contributor language="HTTP Request" implementationClass="org.jetbrains.plugins.rsocket.completion.RSocketRequestCompletionContributor"/>
+        <completion.contributor language="HTTP Request" implementationClass="org.jetbrains.plugins.rsocket.completion.RSocketHeadersCompletionContributor"/>
         <intentionAction>
             <className>org.jetbrains.plugins.rsocket.codeInsight.RSocketRequestConvertToRscIntention</className>
             <!--suppress PluginXmlCapitalization -->
