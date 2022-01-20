@@ -1,0 +1,8 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <completion.contributor language="HTTP Request" implementationClass="org.jetbrains.plugins.rsocket.completion.RSocketRoutingCompletionContributor"/>
+        <fileBasedIndex implementation="org.jetbrains.plugins.rsocket.file.RSocketServiceFileIndex"/>
+        <!-- <lang.directNavigationProvider implementation="dev.jbang.idea.navigation.ScriptRefNavigation"/>-->
+        <microservices.endpointsProvider implementation="org.jetbrains.plugins.rsocket.endpoints.RSocketServiceEndpointProvider"/>
+    </extensions>
+</idea-plugin>
