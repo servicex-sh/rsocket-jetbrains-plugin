@@ -1,10 +1,7 @@
 package org.jetbrains.plugins.rsocket.endpoints
 
 import com.intellij.lang.java.JavaLanguage
-import com.intellij.microservices.endpoints.EndpointType
-import com.intellij.microservices.endpoints.EndpointsFilter
-import com.intellij.microservices.endpoints.EndpointsProvider
-import com.intellij.microservices.endpoints.FrameworkPresentation
+import com.intellij.microservices.endpoints.*
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.ModificationTracker
@@ -36,6 +33,9 @@ class RSocketServiceEndpointProvider : EndpointsProvider<RSocketEndpointsGroup, 
     }
 
     override fun getEndpointGroups(project: Project, filter: EndpointsFilter): List<RSocketEndpointsGroup> {
+        if (filter == ExternalEndpointsFilter) {
+            return emptyList()
+        }
         val groups = RSocketServiceFileIndex.findRSocketServiceFiles(project)
             .map { psiFile ->
                 var vendor = "Spring RSocket"
