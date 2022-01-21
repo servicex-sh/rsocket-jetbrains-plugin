@@ -3,7 +3,9 @@ package org.jetbrains.plugins.rsocket.completion
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.httpClient.http.request.psi.HttpHost
+import com.intellij.httpClient.http.request.psi.HttpPathAbsolute
 import com.intellij.httpClient.http.request.psi.HttpRequest
+import com.intellij.httpClient.http.request.psi.HttpRequestTarget
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.patterns.PsiElementPattern
@@ -20,7 +22,8 @@ import org.jetbrains.plugins.rsocket.rsocketIcon
 
 class RSocketRoutingCompletionContributor : CompletionContributor() {
     companion object {
-        val rsocketRoutingCapture: PsiElementPattern.Capture<LeafPsiElement> = PlatformPatterns.psiElement(LeafPsiElement::class.java).withParent(HttpHost::class.java);
+        val rsocketRoutingCapture: PsiElementPattern.Capture<LeafPsiElement> = PlatformPatterns.psiElement(LeafPsiElement::class.java)
+            .withSuperParent(2,HttpRequestTarget::class.java)
     }
 
     init {
