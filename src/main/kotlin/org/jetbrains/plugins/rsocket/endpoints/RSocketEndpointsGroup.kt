@@ -3,7 +3,9 @@ package org.jetbrains.plugins.rsocket.endpoints
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiJavaFile
-import com.intellij.psi.PsiModifierListOwner
+import org.jetbrains.plugins.rsocket.psi.convertToRSocketRequestType
+import org.jetbrains.plugins.rsocket.psi.extractAliRSocketService
+import org.jetbrains.plugins.rsocket.psi.extractValueFromMessageMapping
 
 class RSocketEndpointsGroup(private val project: Project, private val psiFile: PsiFile, val vendor: String) {
 
@@ -13,28 +15,11 @@ class RSocketEndpointsGroup(private val project: Project, private val psiFile: P
             val psiClass = psiFile.classes[0]
             val rsocketService = psiClass.hasAnnotation("com.alibaba.rsocket.RSocketService")
             if (rsocketService) {
-                var baseNameSpace = psiClass.name
-                val rsocketServiceAnnotation = psiClass.getAnnotation("com.alibaba.rsocket.RSocketService")!!
-                val serviceName = rsocketServiceAnnotation.findAttributeValue("name")
-                if (serviceName != null && serviceName.text.trim('"').isNotEmpty()) {
-                    baseNameSpace = serviceName.text.trim('"')
-                } else {
-                    val serviceInterface = rsocketServiceAnnotation.findAttributeValue("serviceInterface")
-                    if (serviceInterface != null && serviceInterface.text.trim('"').isNotEmpty()) {
-                        val targetClass = serviceInterface.text.trim('"').replace(".class", "")
-                        val serviceInterfacePsiClass = psiClass.superTypes.firstOrNull {
-                            it.className == targetClass
-                        }
-                        if (serviceInterfacePsiClass != null) {
-                            baseNameSpace = serviceInterfacePsiClass.canonicalText
-                        } else {
-                            baseNameSpace = targetClass
-                        }
-                    }
-                }
+                val aliRSocketService = extractAliRSocketService(psiClass)
+                val serviceInterfaceMethods = aliRSocketService.serviceInterface.methods.map { it.name }.toList()
                 psiClass.methods
                     .filter {
-                        it.hasAnnotation("java.lang.Override")
+                        serviceInterfaceMethods.contains(it.name)
                     }
                     .filter {
                         val returnType = it.returnType?.canonicalText
@@ -42,7 +27,7 @@ class RSocketEndpointsGroup(private val project: Project, private val psiFile: P
                     }
                     .map {
                         val requestType = convertToRSocketRequestType(it.returnType?.canonicalText)
-                        RSocketEndpoint("[$requestType]", "${baseNameSpace}.${it.name}", it)
+                        RSocketEndpoint("[$requestType]", "${aliRSocketService.serviceName}.${it.name}", it)
                     }.forEach {
                         endpoints.add(it)
                     }
@@ -77,28 +62,5 @@ class RSocketEndpointsGroup(private val project: Project, private val psiFile: P
         return endpoints
     }
 
-    private fun convertToRSocketRequestType(returnType: String?): String {
-        if (returnType == null) return "REQUEST"
-        return if (returnType.contains("Mono<") && returnType.contains("Void")) {
-            "FNF"
-        } else if (returnType.contains("Flux<")) {
-            "STREAM"
-        } else {
-            "REQUEST"
-        }
-    }
-
-
-    private fun extractValueFromMessageMapping(owner: PsiModifierListOwner): String? {
-        val annotationFullName = "org.springframework.messaging.handler.annotation.MessageMapping"
-        if (owner.hasAnnotation(annotationFullName)) {
-            val messageMappingAnnotation = owner.getAnnotation(annotationFullName)!!
-            val mappingValue = messageMappingAnnotation.findAttributeValue("value")
-            if (mappingValue != null) {
-                return mappingValue.text.trim('"')
-            }
-        }
-        return null
-    }
 
 }
