@@ -13,7 +13,7 @@ import org.jetbrains.plugins.rsocket.rsocketIcon
 
 
 @Suppress("UnstableApiUsage")
-class RSocketEndpoint(private val requestType: String, private val routing: String, private val element: PsiMethod) : ItemPresentation, EndpointMethodPresentation, DataProvider {
+class RSocketEndpoint(val requestType: String, val routing: String, private val element: PsiMethod) : ItemPresentation, EndpointMethodPresentation, DataProvider {
 
     override fun getPresentableText(): String {
         return routing
