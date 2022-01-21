@@ -10,7 +10,6 @@ import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.util.parentOfType
 import com.intellij.util.ProcessingContext
 import org.jetbrains.plugins.rsocket.RSOCKET_REQUEST_TYPES
-import org.jetbrains.plugins.rsocket.endpoints.RSocketEndpoint
 import org.jetbrains.plugins.rsocket.file.RSocketServiceFileIndex
 import org.jetbrains.plugins.rsocket.psi.convertToRSocketRequestType
 import org.jetbrains.plugins.rsocket.psi.extractAliRSocketService
@@ -28,6 +27,7 @@ class RSocketRoutingCompletionContributor : CompletionContributor() {
             val prefix = trimDummy(element.text)
             val httpRequest = element.parentOfType<HttpRequest>()
             if (httpRequest != null && RSOCKET_REQUEST_TYPES.contains(httpRequest.httpMethod)) {
+                val rsocketRequestMethod = httpRequest.httpMethod
                 RSocketServiceFileIndex.findRSocketServiceFiles(httpRequest.project).forEach { psiFile ->
                     if (psiFile is PsiJavaFile) {
                         val psiJavaClass = psiFile.classes[0]
@@ -38,9 +38,15 @@ class RSocketRoutingCompletionContributor : CompletionContributor() {
                             if (prefix.isEmpty() || serviceFullName.contains(prefix)) { // class name completion
                                 result.addElement(LookupElementBuilder.create(serviceFullName).withIcon(rsocketIcon))
                             } else if (prefix.contains(serviceFullName)) {  // method completion
-                                aliRSocketService.serviceInterface.methods.forEach {
-                                    result.addElement(LookupElementBuilder.create("${serviceFullName}.${it.name}").withIcon(rsocketIcon))
-                                }
+                                aliRSocketService.serviceInterface
+                                    .methods
+                                    .forEach {
+                                        val requestType = convertToRSocketRequestType(it.returnType?.canonicalText)
+                                        if (isRequestTypeMatch(requestType, rsocketRequestMethod)) {
+                                            val routingKey = "${serviceFullName}.${it.name}"
+                                            result.addElement(LookupElementBuilder.create(routingKey).withIcon(rsocketIcon))
+                                        }
+                                    }
                             }
                         } else { //MessageMapping
                             var baseNameSpace = extractValueFromMessageMapping(psiJavaClass)
@@ -55,13 +61,14 @@ class RSocketRoutingCompletionContributor : CompletionContributor() {
                                 psiJavaClass.methods
                                     .filter {
                                         it.hasAnnotation("org.springframework.messaging.handler.annotation.MessageMapping")
-                                    }.map {
-                                        val routingKey = extractValueFromMessageMapping(it) ?: it.name
-                                        val requestType = convertToRSocketRequestType(it.returnType?.canonicalText)
-                                        RSocketEndpoint("[$requestType]", "${baseNameSpace}${routingKey}", it)
                                     }.forEach {
-                                        if (prefix.isEmpty() || it.routing.contains(prefix)) {
-                                            result.addElement(LookupElementBuilder.create(it.routing).withIcon(rsocketIcon))
+                                        val mappingValue = extractValueFromMessageMapping(it) ?: it.name
+                                        val routingKey = "${baseNameSpace}${mappingValue}"
+                                        val requestType = convertToRSocketRequestType(it.returnType?.canonicalText)
+                                        if (isRequestTypeMatch(requestType, rsocketRequestMethod)) {
+                                            if (prefix.isEmpty() || routingKey.contains(prefix)) {
+                                                result.addElement(LookupElementBuilder.create(routingKey).withIcon(rsocketIcon))
+                                            }
                                         }
                                     }
                             }
@@ -71,8 +78,15 @@ class RSocketRoutingCompletionContributor : CompletionContributor() {
             }
         }
 
-        protected fun trimDummy(value: String): String {
+        private fun trimDummy(value: String): String {
             return StringUtil.trim(value.replace(CompletionUtil.DUMMY_IDENTIFIER, "").replace(CompletionUtil.DUMMY_IDENTIFIER_TRIMMED, ""))
+        }
+
+        private fun isRequestTypeMatch(requestType: String, rsocketRequestMethod: String): Boolean {
+            return if (rsocketRequestMethod == requestType) {
+                true
+            } else
+                (rsocketRequestMethod == "RSOCKET" || rsocketRequestMethod == "RPC") && requestType == "REQUEST"
         }
     }
 
