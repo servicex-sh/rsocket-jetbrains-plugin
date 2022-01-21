@@ -6,7 +6,9 @@ import com.intellij.httpClient.http.request.psi.HttpHost
 import com.intellij.httpClient.http.request.psi.HttpRequest
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.patterns.PlatformPatterns
+import com.intellij.patterns.PsiElementPattern
 import com.intellij.psi.PsiJavaFile
+import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.parentOfType
 import com.intellij.util.ProcessingContext
 import org.jetbrains.plugins.rsocket.RSOCKET_REQUEST_TYPES
@@ -17,8 +19,12 @@ import org.jetbrains.plugins.rsocket.psi.extractValueFromMessageMapping
 import org.jetbrains.plugins.rsocket.rsocketIcon
 
 class RSocketRoutingCompletionContributor : CompletionContributor() {
+    companion object {
+        val rsocketRoutingCapture: PsiElementPattern.Capture<LeafPsiElement> = PlatformPatterns.psiElement(LeafPsiElement::class.java).withParent(HttpHost::class.java);
+    }
+
     init {
-        extend(CompletionType.BASIC, PlatformPatterns.psiElement().withParent(HttpHost::class.java), RSocketRoutingProvider())
+        extend(CompletionType.BASIC, rsocketRoutingCapture, RSocketRoutingProvider())
     }
 
     private class RSocketRoutingProvider : CompletionProvider<CompletionParameters>() {
