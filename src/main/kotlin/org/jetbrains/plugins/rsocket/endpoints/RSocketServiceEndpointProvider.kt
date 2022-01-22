@@ -14,11 +14,21 @@ class RSocketServiceEndpointProvider : EndpointsProvider<RSocketEndpointsGroup, 
 
     companion object {
         var RSOCKET_ENDPOINT_TYPE = EndpointType("RSocket", rsocketIcon) {
-            "RSocket Server"
+            "RSocket"
         }
-        var RSOCKET_FRAMEWORK = FrameworkPresentation(
+        var ALI_RSOCKET_FRAMEWORK = FrameworkPresentation(
+            "AliRSocket",
+            "Alibaba RSocket",
+            rsocketIcon
+        )
+        var SPRING_RSOCKET_FRAMEWORK = FrameworkPresentation(
             "SpringRSocket",
             "Spring RSocket",
+            rsocketIcon
+        )
+        var RSOCKET_FRAMEWORK = FrameworkPresentation(
+            "RSocket",
+            "Plain RSocket",
             rsocketIcon
         )
     }
@@ -45,12 +55,10 @@ class RSocketServiceEndpointProvider : EndpointsProvider<RSocketEndpointsGroup, 
                 RSocketEndpointsGroup(project, psiFile, vendor)
             }
             .toList()
-        if (groups.any { it.vendor == "Alibaba RSocket" }) {
-            RSOCKET_FRAMEWORK = FrameworkPresentation(
-                "AliRSocket",
-                "Alibaba RSocket",
-                rsocketIcon
-            )
+        RSOCKET_FRAMEWORK = if (groups.any { it.vendor == "Alibaba RSocket" }) {
+            ALI_RSOCKET_FRAMEWORK
+        } else {
+            SPRING_RSOCKET_FRAMEWORK
         }
         return groups
     }
