@@ -57,27 +57,31 @@ class RSocketRoutingCompletionContributor : CompletionContributor() {
                             }
                         } else { //MessageMapping
                             var baseNameSpace = extractValueFromMessageMapping(psiJavaClass)
-                            baseNameSpace = if (baseNameSpace == null) {
-                                ""
+                            if (baseNameSpace != null && (prefix.isEmpty() || baseNameSpace.contains(prefix))) {
+                                result.addElement(LookupElementBuilder.create(baseNameSpace).withIcon(rsocketIcon))
                             } else {
-                                "${baseNameSpace}."
-                            }
-                            if (prefix.isEmpty() || baseNameSpace.isNotEmpty()
-                                || baseNameSpace.contains(prefix) || prefix.contains(baseNameSpace)
-                            ) {
-                                psiJavaClass.methods
-                                    .filter {
-                                        it.hasAnnotation("org.springframework.messaging.handler.annotation.MessageMapping")
-                                    }.forEach {
-                                        val mappingValue = extractValueFromMessageMapping(it) ?: it.name
-                                        val routingKey = "${baseNameSpace}${mappingValue}"
-                                        val requestType = convertToRSocketRequestType(it.returnType?.canonicalText)
-                                        if (isRequestTypeMatch(requestType, rsocketRequestMethod)) {
-                                            if (prefix.isEmpty() || routingKey.contains(prefix)) {
-                                                result.addElement(LookupElementBuilder.create(routingKey).withIcon(rsocketIcon))
+                                baseNameSpace = if (baseNameSpace == null) {
+                                    ""
+                                } else {
+                                    "${baseNameSpace}."
+                                }
+                                if (prefix.isEmpty() || baseNameSpace.isNotEmpty()
+                                    || baseNameSpace.contains(prefix) || prefix.contains(baseNameSpace)
+                                ) {
+                                    psiJavaClass.methods
+                                        .filter {
+                                            it.hasAnnotation("org.springframework.messaging.handler.annotation.MessageMapping")
+                                        }.forEach {
+                                            val mappingValue = extractValueFromMessageMapping(it) ?: it.name
+                                            val routingKey = "${baseNameSpace}${mappingValue}"
+                                            val requestType = convertToRSocketRequestType(it.returnType?.canonicalText)
+                                            if (isRequestTypeMatch(requestType, rsocketRequestMethod)) {
+                                                if (prefix.isEmpty() || routingKey.contains(prefix)) {
+                                                    result.addElement(LookupElementBuilder.create(routingKey).withIcon(rsocketIcon))
+                                                }
                                             }
                                         }
-                                    }
+                                }
                             }
                         }
                     }
