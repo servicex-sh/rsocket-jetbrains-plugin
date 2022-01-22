@@ -1,7 +1,10 @@
 package org.jetbrains.plugins.rsocket.psi
 
 import com.intellij.psi.PsiClass
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiModifierListOwner
+import org.jetbrains.kotlin.psi.KtFile
 
 data class AliRSocketService(val serviceName: String, val serviceInterface: PsiClass)
 
@@ -16,13 +19,29 @@ fun convertToRSocketRequestType(returnType: String?): String {
     }
 }
 
+fun extractFirstClassFromJavaOrKt(psiFile: PsiFile): PsiClass? {
+    return when (psiFile) {
+        is KtFile -> {
+            psiFile.classes.firstOrNull()
+        }
+        is PsiJavaFile -> {
+            psiFile.classes.firstOrNull()
+        }
+        else -> {
+            null
+        }
+    }
+}
+
 fun extractAliRSocketService(serviceImpPsiClass: PsiClass): AliRSocketService {
     var serviceFullName = serviceImpPsiClass.name!!
     var serviceInterfacePsiClass: PsiClass = serviceImpPsiClass
     val rsocketServiceAnnotation = serviceImpPsiClass.getAnnotation("com.alibaba.rsocket.RSocketService")!!
     val serviceInterface = rsocketServiceAnnotation.findAttributeValue("serviceInterface")
     if (serviceInterface != null && serviceInterface.text.trim('"').isNotEmpty()) {
-        val serviceInterfaceClassName = serviceInterface.text.trim('"').replace(".class", "")
+        val serviceInterfaceClassName = serviceInterface.text.trim('"')
+            .replace(".class", "")
+            .replace("::class", "")
         val serviceInterfaceClassType = serviceImpPsiClass.superTypes.firstOrNull {
             it.className == serviceInterfaceClassName
         }
