@@ -10,7 +10,7 @@ The following features are available for RSocket:
 * Live templates: rpc, fnf, stream, metadata
 * Spring Boot RSocket, Alibaba/Spring RSocket Broker support
 * Code completion for RSocket headers
-* Code completion for RSocket routing
+* Code completion/navigation for RSocket routing
 * Intention action to convert RSocket request to rsc CLI
 * Transportation support: TCP and WebSocket
 * RSocket Endpoint support: Java and Kotlin
