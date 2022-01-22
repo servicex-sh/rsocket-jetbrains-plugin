@@ -10,8 +10,10 @@ The following features are available for RSocket:
 * Live templates: rpc, fnf, stream, metadata
 * Spring Boot RSocket, Alibaba/Spring RSocket Broker support
 * Code completion for RSocket headers
+* Code completion for RSocket routing
 * Intention action to convert RSocket request to rsc CLI
 * Transportation support: TCP and WebSocket
+* RSocket Endpoint support: Java and Kotlin
 
 <!-- Plugin description end -->
 
@@ -64,12 +66,6 @@ Content-Type: application/json
 
 * Text style: `normal text`
 * Binary style: `data:application/octet-stream;base64,<base64-string>`
-
-# Todo
-
-* Replace rsocket-java to rsocket-kotlin
-* endpoints for Spring Boot RSocket
-* codeInsight.lineMarkerProvider for @MessageMapping
 
 # References
 
