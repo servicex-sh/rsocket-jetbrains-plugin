@@ -3,11 +3,11 @@ package org.jetbrains.plugins.rsocket.navigation
 import com.intellij.httpClient.http.request.psi.HttpRequestTarget
 import com.intellij.navigation.DirectNavigationProvider
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.util.parentOfType
 import org.jetbrains.plugins.rsocket.completion.RSocketRoutingCompletionContributor.Companion.rsocketRoutingCapture
 import org.jetbrains.plugins.rsocket.file.RSocketServiceFileIndex
 import org.jetbrains.plugins.rsocket.psi.extractAliRSocketService
+import org.jetbrains.plugins.rsocket.psi.extractFirstClassFromJavaOrKt
 import org.jetbrains.plugins.rsocket.psi.extractValueFromMessageMapping
 
 
@@ -27,8 +27,8 @@ class RSocketRoutingNavigation : DirectNavigationProvider {
                 }
                 if (rsocketRouting.isNotEmpty()) {
                     RSocketServiceFileIndex.findRSocketServiceFiles(element.project).forEach { psiFile ->
-                        if (psiFile is PsiJavaFile) {
-                            val psiJavaClass = psiFile.classes[0]
+                        val psiJavaClass = extractFirstClassFromJavaOrKt(psiFile)
+                        if (psiJavaClass != null) {
                             val rsocketService = psiJavaClass.hasAnnotation("com.alibaba.rsocket.RSocketService")
                             if (rsocketService) {
                                 val aliRSocketService = extractAliRSocketService(psiJavaClass)
