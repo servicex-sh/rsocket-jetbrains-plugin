@@ -10,7 +10,7 @@ import java.util.*
 @Suppress("UnstableApiUsage")
 class RSocketRequest(override val URL: String?, override val httpMethod: String?, override val textToSend: String?, val headers: Map<String, String>?) : CommonClientRequest {
     val rsocketURI: URI
-    val dataMimeTyp: String
+    val dataMimeType: String
     val metadataMimeType: String
     val setupData: String?
     val setupMetadata: String?
@@ -42,7 +42,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
             }
         }
         rsocketURI = URI.create(tempUri)
-        dataMimeTyp = headers?.get("Content-Type") ?: WellKnownMimeType.APPLICATION_JSON.string
+        dataMimeType = headers?.get("Content-Type") ?: WellKnownMimeType.APPLICATION_JSON.string
         metadataMimeType = headers?.get("Metadata-Type") ?: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string
         authorization = headers?.get("Authorization")
         userAgent = headers?.get("User-Agent")
@@ -69,7 +69,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     }
 
     fun acceptMimeTypeHint(): String {
-        return acceptMimeType ?: dataMimeTyp
+        return acceptMimeType ?: dataMimeType
     }
 
     fun isAliBroker(): Boolean {
@@ -98,7 +98,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
             val base64Text = textToSend.substring(textToSend.indexOf(",") + 1).trim()
             Base64.getDecoder().decode(base64Text);
         } else {
-            if (dataMimeTyp.startsWith("application/json") && textToSend.startsWith("\"")) {
+            if (dataMimeType.startsWith("application/json") && textToSend.startsWith("\"")) {
                 textToSend.trim('"').toByteArray(Charsets.UTF_8)
             } else {
                 textToSend.toByteArray(Charsets.UTF_8)
