@@ -126,8 +126,8 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             var clientRSocket: RSocket? = null
             try {
                 clientRSocket = createRSocket(rsocketRequest)
-                DefaultPayload.create(Unpooled.EMPTY_BUFFER, Unpooled.wrappedBuffer(rsocketRequest.body()))
-                clientRSocket.metadataPush(createPayload(rsocketRequest)).block()
+                val payload = DefaultPayload.create(Unpooled.EMPTY_BUFFER, Unpooled.wrappedBuffer(rsocketRequest.body()))
+                clientRSocket.metadataPush(payload).block()
             } catch (e: Exception) {
                 return RSocketClientResponse(
                     CommonClientResponseBody.Empty(), "text/plain",
@@ -179,7 +179,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             setupPayload = DefaultPayload.create(data, metadata)
         }
         return RSocketConnector.create()
-            .dataMimeType(rsocketRequest.dataMimeTyp)
+            .dataMimeType(rsocketRequest.dataMimeType)
             .metadataMimeType(rsocketRequest.metadataMimeType)
             .setupPayload(setupPayload!!)
             .connect(clientTransport)
@@ -220,14 +220,15 @@ class RSocketRequestManager(private val project: Project) : Disposable {
 
     private fun compositeMetadata(rsocketRequest: RSocketRequest): CompositeByteBuf {
         val compositeMetadataBuffer = ByteBufAllocator.DEFAULT.compositeBuffer()
-        if (rsocketRequest.routingMetadata()[0].isNotEmpty()) {
-            val routingMetaData = TaggingMetadataCodec.createTaggingContent(ByteBufAllocator.DEFAULT, rsocketRequest.routingMetadata())
+        val routingMetadata = rsocketRequest.routingMetadata()
+        if (routingMetadata[0].isNotEmpty()) {
+            val routingMetaData = TaggingMetadataCodec.createTaggingContent(ByteBufAllocator.DEFAULT, routingMetadata)
             encodeAndAddMetadata(
                 compositeMetadataBuffer, ByteBufAllocator.DEFAULT,
                 WellKnownMimeType.MESSAGE_RSOCKET_ROUTING,
                 routingMetaData
             )
-            val dataType = WellKnownMimeType.fromString(rsocketRequest.dataMimeTyp);
+            val dataType = WellKnownMimeType.fromString(rsocketRequest.dataMimeType);
             encodeAndAddMetadata(
                 compositeMetadataBuffer, ByteBufAllocator.DEFAULT,
                 WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE,
@@ -239,9 +240,10 @@ class RSocketRequestManager(private val project: Project) : Disposable {
 
     private fun jsonMetadata(rsocketRequest: RSocketRequest): String {
         val compositeMetadata = mutableMapOf<String, Any>()
-        if (rsocketRequest.routingMetadata()[0].isNotEmpty()) {
-            compositeMetadata[WellKnownMimeType.MESSAGE_RSOCKET_ROUTING.string] = rsocketRequest.routingMetadata()
-            compositeMetadata[WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE.string] = rsocketRequest.dataMimeTyp
+        val routingMetadata = rsocketRequest.routingMetadata()
+        if (routingMetadata[0].isNotEmpty()) {
+            compositeMetadata[WellKnownMimeType.MESSAGE_RSOCKET_ROUTING.string] = routingMetadata
+            compositeMetadata[WellKnownMimeType.MESSAGE_RSOCKET_MIMETYPE.string] = rsocketRequest.dataMimeType
         }
         if (rsocketRequest.metadata != null) {
             val metadataJson = objectMapper.readValue<Map<String, Any>>(rsocketRequest.metadata)
