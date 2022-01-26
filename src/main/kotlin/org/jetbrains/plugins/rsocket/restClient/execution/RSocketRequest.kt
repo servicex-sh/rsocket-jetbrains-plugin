@@ -11,7 +11,7 @@ import java.util.*
 class RSocketRequest(override val URL: String?, override val httpMethod: String?, override val textToSend: String?, val headers: Map<String, String>?) : CommonClientRequest {
     val rsocketURI: URI
     val dataMimeTyp: String
-    val metadataMimeTyp: String
+    val metadataMimeType: String
     val setupData: String?
     val setupMetadata: String?
     val metadata: String?
@@ -43,7 +43,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
         }
         rsocketURI = URI.create(tempUri)
         dataMimeTyp = headers?.get("Content-Type") ?: WellKnownMimeType.APPLICATION_JSON.string
-        metadataMimeTyp = headers?.get("Metadata-Type") ?: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string
+        metadataMimeType = headers?.get("Metadata-Type") ?: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string
         authorization = headers?.get("Authorization")
         userAgent = headers?.get("User-Agent")
         acceptMimeType = headers?.get("Accept")

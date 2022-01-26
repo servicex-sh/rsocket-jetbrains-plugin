@@ -180,7 +180,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         }
         return RSocketConnector.create()
             .dataMimeType(rsocketRequest.dataMimeTyp)
-            .metadataMimeType(rsocketRequest.metadataMimeTyp)
+            .metadataMimeType(rsocketRequest.metadataMimeType)
             .setupPayload(setupPayload!!)
             .connect(clientTransport)
             .block()!!
@@ -205,7 +205,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
     }
 
     private fun createPayload(rsocketRequest: RSocketRequest): Payload {
-        return if (rsocketRequest.metadataMimeTyp == WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string) {
+        return if (rsocketRequest.metadataMimeType == WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string) {
             val dataBuf = Unpooled.wrappedBuffer(rsocketRequest.body())
             val compositeMetadataBuffer = compositeMetadata(rsocketRequest)
             if (rsocketRequest.isSpringBroker()) {
