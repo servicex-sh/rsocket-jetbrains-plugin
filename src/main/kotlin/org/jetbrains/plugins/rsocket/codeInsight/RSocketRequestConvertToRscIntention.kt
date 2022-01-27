@@ -51,7 +51,7 @@ class RSocketRequestConvertToRscIntention : BaseElementAtCaretIntentionAction() 
             else -> rsocketRequest.httpMethod?.lowercase()
         }
         var data = rsocketRequest.textToSend ?: ""
-        if (rsocketRequest.dataMimeTyp == "application/json") {
+        if (rsocketRequest.dataMimeType == "application/json") {
             data = data.replace("\\s+", "")
         }
         var extra = ""
