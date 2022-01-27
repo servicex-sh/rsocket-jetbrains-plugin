@@ -2,6 +2,13 @@
 
 # RSocket plugin Changelog
 
+## [0.7.0]
+
+### Added
+
+- Bug Fix for METADATA_PUSH
+- IntelliJ IDEA 2022.1 compatible
+
 ## [0.6.0]
 
 ### Added
