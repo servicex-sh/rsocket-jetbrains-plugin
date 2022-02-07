@@ -1,6 +1,12 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
 # RSocket plugin Changelog
+      
+## [0.8.0]
+
+### Added
+
+- Line marker for methods in RSocket class with API test
 
 ## [0.7.0]
 
