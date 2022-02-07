@@ -9,6 +9,7 @@ import org.jetbrains.plugins.rsocket.file.RSocketServiceFileIndex
 import org.jetbrains.plugins.rsocket.psi.extractAliRSocketService
 import org.jetbrains.plugins.rsocket.psi.extractFirstClassFromJavaOrKt
 import org.jetbrains.plugins.rsocket.psi.extractValueFromMessageMapping
+import org.jetbrains.plugins.rsocket.rsocketServiceFullName
 
 
 @Suppress("UnstableApiUsage")
@@ -29,7 +30,7 @@ class RSocketRoutingNavigation : DirectNavigationProvider {
                     RSocketServiceFileIndex.findRSocketServiceFiles(element.project).forEach { psiFile ->
                         val psiJavaClass = extractFirstClassFromJavaOrKt(psiFile)
                         if (psiJavaClass != null) {
-                            val rsocketService = psiJavaClass.hasAnnotation("com.alibaba.rsocket.RSocketService")
+                            val rsocketService = psiJavaClass.hasAnnotation(rsocketServiceFullName)
                             if (rsocketService) {
                                 val aliRSocketService = extractAliRSocketService(psiJavaClass)
                                 val serviceFullName = aliRSocketService.serviceName

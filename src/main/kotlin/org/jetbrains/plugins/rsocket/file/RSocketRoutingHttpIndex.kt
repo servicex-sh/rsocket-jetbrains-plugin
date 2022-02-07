@@ -1,6 +1,8 @@
 package org.jetbrains.plugins.rsocket.file
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.*
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.KeyDescriptor
@@ -46,6 +48,11 @@ class RSocketRoutingHttpIndex : ScalarIndexExtension<String>() {
         fun findAllRSocketRouting(project: Project): Collection<String> {
             val fileBasedIndex = FileBasedIndex.getInstance()
             return fileBasedIndex.getAllKeys(NAME, project)
+        }
+
+        fun findHttpFiles(project: Project, routing: String): Collection<VirtualFile> {
+            val fileBasedIndex = FileBasedIndex.getInstance()
+            return fileBasedIndex.getContainingFiles(NAME, routing, GlobalSearchScope.allScope(project))
         }
     }
 

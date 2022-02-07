@@ -12,11 +12,13 @@ import com.intellij.psi.util.parentOfType
 import com.intellij.util.ProcessingContext
 import org.jetbrains.plugins.rsocket.RSOCKET_REQUEST_TYPES
 import org.jetbrains.plugins.rsocket.file.RSocketServiceFileIndex
+import org.jetbrains.plugins.rsocket.messageMappingFullName
 import org.jetbrains.plugins.rsocket.psi.convertToRSocketRequestType
 import org.jetbrains.plugins.rsocket.psi.extractAliRSocketService
 import org.jetbrains.plugins.rsocket.psi.extractFirstClassFromJavaOrKt
 import org.jetbrains.plugins.rsocket.psi.extractValueFromMessageMapping
 import org.jetbrains.plugins.rsocket.rsocketIcon
+import org.jetbrains.plugins.rsocket.rsocketServiceFullName
 
 class RSocketRoutingCompletionContributor : CompletionContributor() {
     companion object {
@@ -38,7 +40,7 @@ class RSocketRoutingCompletionContributor : CompletionContributor() {
                 RSocketServiceFileIndex.findRSocketServiceFiles(httpRequest.project).forEach { psiFile ->
                     val psiJavaClass = extractFirstClassFromJavaOrKt(psiFile)
                     if (psiJavaClass != null) {
-                        val rsocketService = psiJavaClass.hasAnnotation("com.alibaba.rsocket.RSocketService")
+                        val rsocketService = psiJavaClass.hasAnnotation(rsocketServiceFullName)
                         if (rsocketService) { // AliRSocket
                             val aliRSocketService = extractAliRSocketService(psiJavaClass)
                             val serviceFullName = aliRSocketService.serviceName
@@ -70,7 +72,7 @@ class RSocketRoutingCompletionContributor : CompletionContributor() {
                                 ) {
                                     psiJavaClass.methods
                                         .filter {
-                                            it.hasAnnotation("org.springframework.messaging.handler.annotation.MessageMapping")
+                                            it.hasAnnotation(messageMappingFullName)
                                         }.forEach {
                                             val mappingValue = extractValueFromMessageMapping(it) ?: it.name
                                             val routingKey = "${baseNameSpace}${mappingValue}"

@@ -2,10 +2,12 @@ package org.jetbrains.plugins.rsocket.endpoints
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import org.jetbrains.plugins.rsocket.messageMappingFullName
 import org.jetbrains.plugins.rsocket.psi.convertToRSocketRequestType
 import org.jetbrains.plugins.rsocket.psi.extractAliRSocketService
 import org.jetbrains.plugins.rsocket.psi.extractFirstClassFromJavaOrKt
 import org.jetbrains.plugins.rsocket.psi.extractValueFromMessageMapping
+import org.jetbrains.plugins.rsocket.rsocketServiceFullName
 
 class RSocketEndpointsGroup(private val project: Project, private val psiFile: PsiFile, val vendor: String) {
 
@@ -13,7 +15,7 @@ class RSocketEndpointsGroup(private val project: Project, private val psiFile: P
         val endpoints = mutableListOf<RSocketEndpoint>()
         val psiClass = extractFirstClassFromJavaOrKt(psiFile)
         if (psiClass != null) {
-            val rsocketService = psiClass.hasAnnotation("com.alibaba.rsocket.RSocketService")
+            val rsocketService = psiClass.hasAnnotation(rsocketServiceFullName)
             if (rsocketService) {
                 val aliRSocketService = extractAliRSocketService(psiClass)
                 val serviceInterfaceMethods = aliRSocketService.serviceInterface.methods.map { it.name }.toList()
@@ -40,7 +42,7 @@ class RSocketEndpointsGroup(private val project: Project, private val psiFile: P
                 }
                 psiClass.methods
                     .filter {
-                        it.hasAnnotation("org.springframework.messaging.handler.annotation.MessageMapping")
+                        it.hasAnnotation(messageMappingFullName)
                     }.map {
                         val routingKey = extractValueFromMessageMapping(it) ?: it.name
                         val requestType = convertToRSocketRequestType(it.returnType?.canonicalText)

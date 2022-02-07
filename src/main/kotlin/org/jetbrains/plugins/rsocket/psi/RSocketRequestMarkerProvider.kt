@@ -12,6 +12,7 @@ import com.intellij.psi.PsiManager
 import org.jetbrains.kotlin.psi.psiUtil.getChildrenOfType
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import org.jetbrains.plugins.rsocket.file.RSocketRoutingHttpIndex
+import org.jetbrains.plugins.rsocket.messageMappingFullName
 
 
 class RSocketRequestMarkerProvider : RelatedItemLineMarkerProvider() {
@@ -19,10 +20,10 @@ class RSocketRequestMarkerProvider : RelatedItemLineMarkerProvider() {
     override fun collectNavigationMarkers(element: PsiElement, result: MutableCollection<in RelatedItemLineMarkerInfo<*>>) {
         if (element is PsiAnnotation) {
             val psiAnnotation: PsiAnnotation = element
-            if ("org.springframework.messaging.handler.annotation.MessageMapping" == element.qualifiedName) {
+            if (messageMappingFullName == element.qualifiedName) {
                 var routing = psiAnnotation.findAttributeValue("value")?.text?.trim('"')
                 val psiClass = element.getParentOfType<PsiClass>(true)!!
-                if (psiClass.hasAnnotation("org.springframework.messaging.handler.annotation.MessageMapping")) {
+                if (psiClass.hasAnnotation(messageMappingFullName)) {
                     val namespace = extractValueFromMessageMapping(psiClass)
                     if (namespace != null) {
                         routing = "${namespace}.${routing}"
