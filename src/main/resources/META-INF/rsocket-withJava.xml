@@ -3,7 +3,12 @@
     <extensions defaultExtensionNs="com.intellij">
         <completion.contributor language="HTTP Request" implementationClass="org.jetbrains.plugins.rsocket.completion.RSocketRoutingCompletionContributor"/>
         <fileBasedIndex implementation="org.jetbrains.plugins.rsocket.file.RSocketServiceFileIndex"/>
-        <!-- <lang.directNavigationProvider implementation="dev.jbang.idea.navigation.ScriptRefNavigation"/>-->
+        <fileBasedIndex implementation="org.jetbrains.plugins.rsocket.file.RSocketRoutingHttpIndex"/>
+        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="org.jetbrains.plugins.rsocket.psi.RSocketRequestMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="kotlin" implementationClass="org.jetbrains.plugins.rsocket.psi.RSocketRequestMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="JAVA" implementationClass="org.jetbrains.plugins.rsocket.psi.AliRSocketRequestMarkerProvider"/>
+        <codeInsight.lineMarkerProvider language="kotlin" implementationClass="org.jetbrains.plugins.rsocket.psi.AliRSocketRequestMarkerProvider"/>
+        <lang.directNavigationProvider implementation="org.jetbrains.plugins.rsocket.navigation.RSocketRoutingNavigation"/>
         <microservices.endpointsProvider implementation="org.jetbrains.plugins.rsocket.endpoints.RSocketServiceEndpointProvider"/>
     </extensions>
 </idea-plugin>
