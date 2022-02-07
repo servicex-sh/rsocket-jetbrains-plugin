@@ -14,6 +14,7 @@ The following features are available for RSocket:
 * Intention action to convert RSocket request to rsc CLI
 * Transportation support: TCP and WebSocket
 * RSocket Endpoint support: Java and Kotlin
+* Line marker for methods in RSocket class with API test 
 
 <!-- Plugin description end -->
 
@@ -71,3 +72,11 @@ Content-Type: application/json
 
 * RSocket: [https://rsocket.io/](https://rsocket.io/)
 * rsocket-kotlin: https://github.com/rsocket/rsocket-kotlin 
+* Language Injection: https://plugins.jetbrains.com/docs/intellij/language-injection.html
+                            
+
+```
+
+psiElement(HttpMessageBody::class.java).afterSibling(psiElement(HttpHeaderField::class.java).withText("Content-Type: application/cloudevents+json"))
+
+```
