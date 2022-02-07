@@ -5,7 +5,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.httpClient.http.request.psi.HttpHeaderField
 import com.intellij.httpClient.http.request.psi.HttpHeaderFieldName
 import com.intellij.httpClient.http.request.psi.HttpRequest
-import com.intellij.patterns.PlatformPatterns
+import com.intellij.patterns.PlatformPatterns.psiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import org.jetbrains.plugins.rsocket.RSOCKET_REQUEST_TYPES
@@ -13,7 +13,7 @@ import org.jetbrains.plugins.rsocket.rsocketIcon
 
 class RSocketHeadersCompletionContributor : CompletionContributor() {
     init {
-        extend(CompletionType.BASIC, PlatformPatterns.psiElement().withParent(HttpHeaderFieldName::class.java), RSocketHeaderFieldNamesProvider())
+        extend(CompletionType.BASIC, psiElement().withParent(HttpHeaderFieldName::class.java), RSocketHeaderFieldNamesProvider())
     }
 
     private class RSocketHeaderFieldNamesProvider : CompletionProvider<CompletionParameters>() {
