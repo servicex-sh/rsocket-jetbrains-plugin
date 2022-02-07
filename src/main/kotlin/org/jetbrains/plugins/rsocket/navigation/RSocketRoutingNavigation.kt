@@ -35,7 +35,7 @@ class RSocketRoutingNavigation : DirectNavigationProvider {
                                 val aliRSocketService = extractAliRSocketService(psiJavaClass)
                                 val serviceFullName = aliRSocketService.serviceName
                                 if (rsocketRouting.startsWith(serviceFullName)) {
-                                    aliRSocketService.serviceInterface
+                                    psiJavaClass
                                         .methods
                                         .forEach {
                                             val routingKey = "${serviceFullName}.${it.name}"
