@@ -19,7 +19,6 @@
         <httpClient.RequestExecutionSupport implementation="org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequestExecutionSupport"/>
         <defaultLiveTemplates file="/liveTemplates/RSocket.xml"/>
         <completion.contributor language="HTTP Request" implementationClass="org.jetbrains.plugins.rsocket.completion.RSocketHeadersCompletionContributor"/>
-        <lang.directNavigationProvider implementation="org.jetbrains.plugins.rsocket.navigation.RSocketRoutingNavigation"/>
         <intentionAction>
             <className>org.jetbrains.plugins.rsocket.codeInsight.RSocketRequestConvertToRscIntention</className>
             <!--suppress PluginXmlCapitalization -->
