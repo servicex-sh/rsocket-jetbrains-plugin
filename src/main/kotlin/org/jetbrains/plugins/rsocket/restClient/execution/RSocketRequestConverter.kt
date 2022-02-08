@@ -27,6 +27,9 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
         if (requestType == "RSOCKET") {
             requestType = "RPC"
         }
+        //clean url and header
+        val host = headers?.getOrDefault("Host", "localhost")!!
+        url = convertToRSocketUrl(url, host)
         return RSocketRequest(url, requestType, requestBody, headers)
     }
 
@@ -37,6 +40,33 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
         builder.append("\n");
         builder.append(request.textToSend ?: "")
         return builder.toString()
+    }
+
+    private fun convertToRSocketUrl(URL: String, host: String): String {
+        var tempUri = URL
+        if (!URL.contains("://")) { //without schema
+            if (URL.indexOf("/") > 0) { //contains host
+                tempUri = if (URL.contains("/rsocket")) {
+                    "ws://$URL"
+                } else {
+                    "tcp://$URL"
+                }
+            } else { // get host information from header
+                tempUri = if (host.contains("://")) {
+                    "${host.trim('/')}/${URL.trim('/')}"
+                } else {
+                    "tcp://$host/${URL.trim('/')}"
+                }
+            }
+        }
+        if (!tempUri.startsWith("rsocket")) {
+            tempUri = tempUri.replace("http://", "rsocket+ws://")
+                .replace("https://", "rsocket+wss://")
+                .replace("ws://", "rsocket+ws://")
+                .replace("wss://", "rsocket+wss://")
+                .replace("tcp://", "rsocket://")
+        }
+        return tempUri
     }
 
 }
