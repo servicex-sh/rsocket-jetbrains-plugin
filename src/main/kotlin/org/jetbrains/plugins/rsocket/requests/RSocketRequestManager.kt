@@ -152,8 +152,12 @@ class RSocketRequestManager(private val project: Project) : Disposable {
 
     private fun createRSocket(rsocketRequest: RSocketRequest): RSocket {
         val rsocketURI = rsocketRequest.rsocketURI
-        val clientTransport: ClientTransport = if (rsocketURI.scheme == "tcp") {
-            TcpClientTransport.create(rsocketURI.host, rsocketURI.port)
+        val clientTransport: ClientTransport = if (rsocketURI.scheme == "rsocket" || rsocketURI.scheme == "tcp") {
+            var port = rsocketURI.port
+            if (port <= 0) {
+                port = 42252
+            }
+            TcpClientTransport.create(rsocketURI.host, port)
         } else {
             WebsocketClientTransport.create(rsocketRequest.getWebsocketRequestURI())
         }
