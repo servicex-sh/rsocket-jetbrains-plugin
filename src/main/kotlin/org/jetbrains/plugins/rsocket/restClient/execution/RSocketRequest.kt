@@ -20,28 +20,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     val userAgent: String?
 
     init {
-        var tempUri = "tcp://localhost:42252"
-        if (URL != null && URL.trim().isNotEmpty() && (URL.trim() != "/")) {
-            if (URL.contains("://")) { //with schema
-                tempUri = URL.replace("http://", "ws://").replace("https://", "wss://")
-            } else {
-                if (URL.indexOf("/") > 0) { //contains host
-                    tempUri = if (URL.contains("/rsocket")) {
-                        "ws://$URL"
-                    } else {
-                        "tcp://$URL"
-                    }
-                } else { // get host information from header
-                    val host = headers?.get("Host") ?: "localhost"
-                    tempUri = if (host.contains("://")) {
-                        "$host/$URL"
-                    } else {
-                        "tcp://$host/$URL"
-                    }
-                }
-            }
-        }
-        rsocketURI = URI.create(tempUri)
+        rsocketURI = URI.create(URL)
         dataMimeType = headers?.get("Content-Type") ?: WellKnownMimeType.APPLICATION_JSON.string
         metadataMimeType = headers?.get("Metadata-Type") ?: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string
         authorization = headers?.get("Authorization")
@@ -54,7 +33,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
 
     fun routingMetadata(): List<String> {
         var path = rsocketURI.path ?: ""
-        if (rsocketURI.scheme.startsWith("ws") && path.startsWith("/rsocket")) {
+        if (rsocketURI.scheme.contains("+ws") && path.startsWith("/rsocket")) {
             path = path.substring(8)
         }
         if (path.startsWith("/")) {
