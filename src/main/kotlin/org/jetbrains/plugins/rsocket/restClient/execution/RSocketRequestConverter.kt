@@ -18,10 +18,10 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
         var requestBody: String? = null
         var headers: Map<String, String>? = null
         ApplicationManager.getApplication().runReadAction {
-            val httpRequest = requestPsiPointer.element
-            url = httpRequest?.getHttpUrl(substitutor) ?: ""
-            headers = httpRequest?.headerFieldList?.associate { it.name to it.getValue(substitutor) }
-            requestType = httpRequest?.httpMethod!!
+            val httpRequest = requestPsiPointer.element!!
+            url = substitutor.getValue(httpRequest.requestTarget!!)
+            headers = httpRequest.headerFieldList.associate { it.name to it.getValue(substitutor) }
+            requestType = httpRequest.httpMethod
             requestBody = httpRequest.requestBody?.text
         }
         if (requestType == "RSOCKET") {
