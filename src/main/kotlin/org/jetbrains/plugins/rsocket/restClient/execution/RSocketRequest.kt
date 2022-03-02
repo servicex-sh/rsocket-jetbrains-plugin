@@ -8,7 +8,7 @@ import java.util.*
 
 
 @Suppress("UnstableApiUsage")
-class RSocketRequest(override val URL: String?, override val httpMethod: String?, override val textToSend: String?, val headers: Map<String, String>?) : CommonClientRequest {
+class RSocketRequest(override val URL: String?, override val httpMethod: String?, override val textToSend: String?, val headers: Map<String, String>) : CommonClientRequest {
     val rsocketURI: URI
     val dataMimeType: String
     val metadataMimeType: String
@@ -20,15 +20,15 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     val userAgent: String?
 
     init {
-        rsocketURI = URI.create(URL)
-        dataMimeType = headers?.get("Content-Type") ?: WellKnownMimeType.APPLICATION_JSON.string
-        metadataMimeType = headers?.get("Metadata-Type") ?: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string
-        authorization = headers?.get("Authorization")
-        userAgent = headers?.get("User-Agent")
-        acceptMimeType = headers?.get("Accept")
-        setupMetadata = headers?.get("Setup-Metadata")
-        setupData = headers?.get("Setup-Data")
-        metadata = headers?.get("Metadata")
+        rsocketURI = URI.create(URL!!)
+        dataMimeType = headers["Content-Type"] ?: WellKnownMimeType.APPLICATION_JSON.string
+        metadataMimeType = headers["Metadata-Type"] ?: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string
+        authorization = headers["Authorization"]
+        userAgent = headers["User-Agent"]
+        acceptMimeType = headers["Accept"]
+        setupMetadata = headers["Setup-Metadata"]
+        setupData = headers["Setup-Data"]
+        metadata = headers["Metadata"]
     }
 
     fun routingMetadata(): List<String> {

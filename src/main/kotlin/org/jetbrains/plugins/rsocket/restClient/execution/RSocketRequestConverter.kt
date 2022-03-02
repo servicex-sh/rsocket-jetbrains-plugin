@@ -16,7 +16,7 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
         var url = ""
         var requestType = ""
         var requestBody: String? = null
-        var headers: Map<String, String>? = null
+        lateinit var headers: Map<String, String>
         ApplicationManager.getApplication().runReadAction {
             val httpRequest = requestPsiPointer.element!!
             url = substitutor.getValue(httpRequest.requestTarget!!)
@@ -28,7 +28,7 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
             requestType = "RPC"
         }
         //clean url and header
-        val host = headers?.getOrDefault("Host", "localhost")!!
+        val host = headers.getOrDefault("Host", "localhost")
         url = convertToRSocketUrl(url, host)
         return RSocketRequest(url, requestType, requestBody, headers)
     }
