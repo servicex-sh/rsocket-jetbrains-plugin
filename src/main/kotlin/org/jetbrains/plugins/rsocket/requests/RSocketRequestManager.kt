@@ -162,12 +162,10 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             WebsocketClientTransport.create(rsocketRequest.getWebsocketRequestURI())
         }
         var setupPayload: Payload? = null
-        if (rsocketRequest.headers != null) {
-            if (rsocketRequest.isAliBroker()) {
-                setupPayload = createSetupPayloadForAliBroker()
-            } else if (rsocketRequest.isSpringBroker()) {
-                setupPayload = createSetupPayloadForSpringBroker(Id.from(appId))
-            }
+        if (rsocketRequest.isAliBroker()) {
+            setupPayload = createSetupPayloadForAliBroker()
+        } else if (rsocketRequest.isSpringBroker()) {
+            setupPayload = createSetupPayloadForSpringBroker(Id.from(appId))
         }
         if (setupPayload == null) {
             val metadata = if (rsocketRequest.setupMetadata == null) {
@@ -269,7 +267,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
      */
     private fun encodeAddressMetadata(routeId: Id, metadataHolder: CompositeByteBuf, request: RSocketRequest) {
         val builder: Address.Builder = Address.from(routeId)
-        request.headers?.forEach { (key, value) ->
+        request.headers.forEach { (key, value) ->
             if (key.startsWith("X-")) {
                 val keyName = key.substring(2)
                 val knownKey = WellKnownKey.fromMimeType("io.rsocket.broker.$keyName")
