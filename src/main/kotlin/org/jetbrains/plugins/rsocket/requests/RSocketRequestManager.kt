@@ -90,8 +90,10 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         var clientRSocket: RSocket? = null
         var fluxDisposable: reactor.core.Disposable? = null
         val disposeRSocket = Disposable {
-            fluxDisposable?.dispose()
-            if (clientRSocket != null && clientRSocket!!.isDisposed) {
+            if (fluxDisposable != null && !fluxDisposable!!.isDisposed) {
+                fluxDisposable!!.dispose()
+            }
+            if (clientRSocket != null && !clientRSocket!!.isDisposed) {
                 clientRSocket!!.dispose()
             }
         }
