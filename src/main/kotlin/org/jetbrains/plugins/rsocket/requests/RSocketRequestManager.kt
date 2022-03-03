@@ -88,7 +88,9 @@ class RSocketRequestManager(private val project: Project) : Disposable {
     fun requestStream(rsocketRequest: RSocketRequest): CommonClientResponse {
         val dataMimeType = rsocketRequest.acceptMimeTypeHint()
         var clientRSocket: RSocket? = null
+        var fluxDisposable: reactor.core.Disposable? = null
         val disposeRSocket = Disposable {
+            fluxDisposable?.dispose()
             if (clientRSocket != null && clientRSocket!!.isDisposed) {
                 clientRSocket!!.dispose()
             }
@@ -100,7 +102,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         val textStream = CommonClientResponseBody.TextStream(shared, bodyFileHint(rsocketRequest)).withConnectionDisposable(disposeRSocket)
         try {
             clientRSocket = createRSocket(rsocketRequest)
-            clientRSocket.requestStream(createPayload(rsocketRequest))
+            fluxDisposable = clientRSocket.requestStream(createPayload(rsocketRequest))
                 .doFinally {
                     shared.tryEmit(CommonClientResponseBody.TextStream.Message.ConnectionClosed.End)
                     clientRSocket.dispose()
