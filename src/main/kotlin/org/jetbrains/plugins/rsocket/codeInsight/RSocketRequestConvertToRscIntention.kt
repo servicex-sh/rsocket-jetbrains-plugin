@@ -28,14 +28,14 @@ class RSocketRequestConvertToRscIntention : BaseElementAtCaretIntentionAction() 
     }
 
     override fun invoke(project: Project, editor: Editor, element: PsiElement) {
-        val httpRequest = PsiTreeUtil.getParentOfType(element, HttpRequest::class.java)
+        val httpRequest = PsiTreeUtil.getParentOfType(element, HttpRequest::class.java)!!
         val substitutor = HttpRequestVariableSubstitutor.getDefault(project);
-        val headers = httpRequest?.headerFieldList?.associate { it.name to it.getValue(substitutor) }
-        var requestType = httpRequest?.httpMethod
+        val headers = httpRequest.headerFieldList.associate { it.name to it.getValue(substitutor) }
+        var requestType = httpRequest.httpMethod
         if (requestType == "RSOCKET") {
             requestType = "RPC"
         }
-        val rsocketRequest = RSocketRequest(httpRequest?.getHttpUrl(substitutor), requestType, httpRequest?.requestBody?.text, headers)
+        val rsocketRequest = RSocketRequest(httpRequest.getHttpUrl(substitutor), requestType, httpRequest.requestBody?.text, headers)
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         val testData = StringSelection(convertToRscCli(rsocketRequest))
         clipboard.setContents(testData, testData)
