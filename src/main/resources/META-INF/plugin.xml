@@ -8,6 +8,7 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends optional="true" config-file="rsocket-withJava.xml">com.intellij.java</depends>
+    <depends optional="true" config-file="rsocket-msa.xml">org.strangeway.msa</depends>
     <!--suppress PluginXmlValidity -->
     <dependencies>
         <plugin id="com.jetbrains.restClient"/>
