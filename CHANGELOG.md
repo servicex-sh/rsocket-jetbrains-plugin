@@ -1,7 +1,13 @@
 <!-- Keep a Changelog guide -> https://keepachangelog.com -->
 
 # RSocket plugin Changelog
-      
+
+## [0.9.0]
+
+### Added
+
+- Microservices Annotator support for RSocket and RSocketRequester interfaces
+
 ## [0.8.0]
 
 ### Added
