@@ -2,7 +2,7 @@ package org.jetbrains.plugins.rsocket
 
 import com.intellij.openapi.util.IconLoader
 
-val rsocketIcon = IconLoader.findIcon("rsocket-icon.svg")!!
+val rsocketIcon = IconLoader.getIcon("rsocket-icon.svg", RSocketBundle::class.java)
 const val messageMappingFullName = "org.springframework.messaging.handler.annotation.MessageMapping"
 const val rsocketServiceFullName = "com.alibaba.rsocket.RSocketService"
 
