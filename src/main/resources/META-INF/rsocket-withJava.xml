@@ -10,6 +10,6 @@
         <codeInsight.lineMarkerProvider language="kotlin" implementationClass="org.jetbrains.plugins.rsocket.psi.AliRSocketRequestMarkerProvider"/>
         <lang.directNavigationProvider implementation="org.jetbrains.plugins.rsocket.navigation.RSocketRoutingNavigation"/>
         <microservices.endpointsProvider implementation="org.jetbrains.plugins.rsocket.endpoints.RSocketServiceEndpointProvider"/>
-        <microservices.urlResolverFactory implementation="org.jetbrains.plugins.rsocket.restClient.url.RSocketUrlResolverFactory"/>
+        <!--  <microservices.urlResolverFactory implementation="org.jetbrains.plugins.rsocket.restClient.url.RSocketUrlResolverFactory"/>-->
     </extensions>
 </idea-plugin>
