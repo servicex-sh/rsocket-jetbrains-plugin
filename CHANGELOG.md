@@ -2,6 +2,25 @@
 
 # RSocket plugin Changelog
 
+## [0.10.0]
+
+### Added
+
+- Add application/graphql support: 
+          
+```http request
+### GraphQL over RSocket
+RSOCKET graphql
+Host: ws://localhost:8080/rsocket
+Content-Type: application/graphql
+
+query {
+    findBook(id: "book-1") { id name }
+}
+```
+
+If you want to use GraphQL variables, please add `X-GraphQL-Variables: {id: 1}` HTTP header.
+
 ## [0.9.0]
 
 ### Added
