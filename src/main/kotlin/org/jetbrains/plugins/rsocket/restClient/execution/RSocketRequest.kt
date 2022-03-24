@@ -23,7 +23,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
 
     init {
         rsocketURI = URI.create(URL!!)
-        dataMimeType = headers["Content-Type"] ?: WellKnownMimeType.APPLICATION_JSON.string
+        this.metadataMimeType = headers["Metadata-Type"] ?: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string
         authorization = headers["Authorization"]
         userAgent = headers["User-Agent"]
         acceptMimeType = headers["Accept"]
@@ -31,9 +31,9 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
         setupData = headers["Setup-Data"]
         metadata = headers["Metadata"]
         // graphql convert https://github.com/spring-projects/spring-graphql/issues/339
-        var tempMetaDataType = headers["Metadata-Type"] ?: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string
+        var tempDataMimeType = headers["Content-Type"] ?: WellKnownMimeType.APPLICATION_JSON.string
         var tempBody = textToSend
-        if (tempMetaDataType == "application/graphql") {
+        if (tempDataMimeType == "application/graphql") {
             val objectMapper = ObjectMapper()
             val jsonRequest = mutableMapOf<String, Any>()
             jsonRequest["query"] = textToSend!!
@@ -42,10 +42,11 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
                 jsonRequest["variables"] = objectMapper.readValue(graphqlVariables, Map::class.java)
             }
             tempBody = objectMapper.writeValueAsString(jsonRequest)
-        } else if (tempMetaDataType == "application/graphql+json") {  // application/graphql+json is not well-known type now
-            tempMetaDataType = "application/json"
+            tempDataMimeType = "application/json"
+        } else if (tempDataMimeType == "application/graphql+json") {  // application/graphql+json is not well-known type now
+            tempDataMimeType = "application/json"
         }
-        this.metadataMimeType = tempMetaDataType
+        this.dataMimeType = tempDataMimeType
         this.bodyText = tempBody
     }
 
