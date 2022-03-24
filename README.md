@@ -16,9 +16,7 @@ The following features are available for RSocket:
 * RSocket Endpoint support: Java and Kotlin
 * Line marker for methods in RSocket class with API test 
 
-<!-- Plugin description end -->
-
-# RSocket requests demo
+### RSocket requests demo
 
 ```http request
 ### rsocket request response for Spring Boot RSocket
@@ -35,15 +33,10 @@ X-AliBroker: true
 Content-Type: application/json
 
 [2]
-
-### Spring RSocket Broker
-RSOCKET pong
-Host: 127.0.0.1:8001
-X-ServiceName: com.example.PongService
-Content-Type: application/json
-
-"ping"
 ```
+
+<!-- Plugin description end -->
+
 
 # RSocket URI and Routing
 
@@ -73,10 +66,3 @@ Content-Type: application/json
 * RSocket: [https://rsocket.io/](https://rsocket.io/)
 * rsocket-kotlin: https://github.com/rsocket/rsocket-kotlin 
 * Language Injection: https://plugins.jetbrains.com/docs/intellij/language-injection.html
-                            
-
-```
-
-psiElement(HttpMessageBody::class.java).afterSibling(psiElement(HttpHeaderField::class.java).withText("Content-Type: application/cloudevents+json"))
-
-```
