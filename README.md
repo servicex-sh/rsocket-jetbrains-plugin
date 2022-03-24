@@ -14,7 +14,7 @@ The following features are available for RSocket:
 * Intention action to convert RSocket request to rsc CLI
 * Transportation support: TCP and WebSocket
 * RSocket Endpoint support: Java and Kotlin
-* Line marker for methods in RSocket class with API test 
+* Line marker for methods in RSocket class with API test
 
 ### RSocket requests demo
 
@@ -36,7 +36,6 @@ Content-Type: application/json
 ```
 
 <!-- Plugin description end -->
-
 
 # RSocket URI and Routing
 
@@ -61,8 +60,23 @@ Content-Type: application/json
 * Text style: `normal text`
 * Binary style: `data:application/octet-stream;base64,<base64-string>`
 
+# GraphQL over RSocket
+
+```http request
+### GraphQL over RSocket
+RSOCKET graphql
+Host: ws://localhost:8080/rsocket
+Content-Type: application/graphql
+
+query {
+    findBook(id: "book-1") { id name }
+}
+```
+
+If you want to use GraphQL variables, please add `X-GraphQL-Variables: {id: 1}` HTTP header.
+
 # References
 
 * RSocket: [https://rsocket.io/](https://rsocket.io/)
-* rsocket-kotlin: https://github.com/rsocket/rsocket-kotlin 
+* rsocket-kotlin: https://github.com/rsocket/rsocket-kotlin
 * Language Injection: https://plugins.jetbrains.com/docs/intellij/language-injection.html
