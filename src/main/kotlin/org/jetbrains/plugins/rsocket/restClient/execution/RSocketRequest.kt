@@ -1,5 +1,6 @@
 package org.jetbrains.plugins.rsocket.restClient.execution
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.intellij.httpClient.execution.common.CommonClientRequest
 import com.intellij.util.queryParameters
 import io.rsocket.metadata.WellKnownMimeType
@@ -18,17 +19,34 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     val acceptMimeType: String?
     val authorization: String?
     val userAgent: String?
+    val bodyText: String?
 
     init {
         rsocketURI = URI.create(URL!!)
         dataMimeType = headers["Content-Type"] ?: WellKnownMimeType.APPLICATION_JSON.string
-        metadataMimeType = headers["Metadata-Type"] ?: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string
         authorization = headers["Authorization"]
         userAgent = headers["User-Agent"]
         acceptMimeType = headers["Accept"]
         setupMetadata = headers["Setup-Metadata"]
         setupData = headers["Setup-Data"]
         metadata = headers["Metadata"]
+        // graphql convert https://github.com/spring-projects/spring-graphql/issues/339
+        var tempMetaDataType = headers["Metadata-Type"] ?: WellKnownMimeType.MESSAGE_RSOCKET_COMPOSITE_METADATA.string
+        var tempBody = textToSend
+        if (tempMetaDataType == "application/graphql") {
+            val objectMapper = ObjectMapper()
+            val jsonRequest = mutableMapOf<String, Any>()
+            jsonRequest["query"] = textToSend!!
+            val graphqlVariables = getHeadValue("x-graphql-variables")
+            if (graphqlVariables != null) {
+                jsonRequest["variables"] = objectMapper.readValue(graphqlVariables, Map::class.java)
+            }
+            tempBody = objectMapper.writeValueAsString(jsonRequest)
+        } else if (tempMetaDataType == "application/graphql+json") {  // application/graphql+json is not well-known type now
+            tempMetaDataType = "application/json"
+        }
+        this.metadataMimeType = tempMetaDataType
+        this.bodyText = tempBody
     }
 
     fun routingMetadata(): List<String> {
@@ -52,11 +70,11 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     }
 
     fun isAliBroker(): Boolean {
-        return this.headers != null && this.headers.contains("X-AliBroker")
+        return this.headers.contains("X-AliBroker")
     }
 
     fun isSpringBroker(): Boolean {
-        return this.headers != null && this.headers.contains("X-ServiceName")
+        return this.headers.contains("X-ServiceName")
     }
 
     fun getWebsocketRequestURI(): URI {
@@ -71,16 +89,16 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     }
 
     fun body(): ByteArray {
-        return if (textToSend == null) {
+        return if (bodyText == null) {
             ByteArray(0)
-        } else if (textToSend.startsWith("data:")) {
-            val base64Text = textToSend.substring(textToSend.indexOf(",") + 1).trim()
+        } else if (bodyText.startsWith("data:")) {
+            val base64Text = bodyText.substring(bodyText.indexOf(",") + 1).trim()
             Base64.getDecoder().decode(base64Text);
         } else {
-            if (dataMimeType.startsWith("application/json") && textToSend.startsWith("\"")) {
-                textToSend.trim('"').toByteArray(Charsets.UTF_8)
+            if (dataMimeType.startsWith("application/json") && bodyText.startsWith("\"")) {
+                bodyText.trim('"').toByteArray(Charsets.UTF_8)
             } else {
-                textToSend.toByteArray(Charsets.UTF_8)
+                bodyText.toByteArray(Charsets.UTF_8)
             }
         }
     }
@@ -94,6 +112,15 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
         } else {
             text.toByteArray(Charsets.UTF_8)
         }
+    }
+
+    private fun getHeadValue(name: String): String? {
+        for (header in headers) {
+            if (header.key.lowercase() == name) {
+                return header.value
+            }
+        }
+        return null
     }
 
 }
