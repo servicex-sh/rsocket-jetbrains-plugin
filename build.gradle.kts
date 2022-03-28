@@ -33,9 +33,9 @@ intellij {
 }
 
 dependencies {
-    implementation(platform("io.projectreactor:reactor-bom:2020.0.16"))
-    implementation("io.rsocket:rsocket-core:1.1.1")
-    implementation("io.rsocket:rsocket-transport-netty:1.1.1")
+    implementation(platform("io.projectreactor:reactor-bom:2020.0.17"))
+    implementation("io.rsocket:rsocket-core:1.1.2")
+    implementation("io.rsocket:rsocket-transport-netty:1.1.2")
     implementation("io.rsocket.broker:rsocket-broker-frames:0.3.0")
 }
 
