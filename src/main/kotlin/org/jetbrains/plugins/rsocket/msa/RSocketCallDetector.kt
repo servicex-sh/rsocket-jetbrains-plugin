@@ -13,7 +13,7 @@ import org.strangeway.msa.frameworks.hasLibraryClass
 class RSocketCallDetector : CallDetector {
     private val interaction: Interaction = FrameworkInteraction(InteractionType.REQUEST, "RSocket")
     private val rsocketServiceAnnotations = listOf("com.alibaba.rsocket.RSocketServiceInterface")
-    private val rsocketStubInterfaces = listOf("io.rsocket.RSocket", "org.springframework.messaging.rsocket.RSocketRequester")
+    private val rsocketStubInterfaces = listOf("io.rsocket.RSocket", "io.rsocket.kotlin.RSocket", "org.springframework.messaging.rsocket.RSocketRequester")
     override fun getCallInteraction(project: Project, uCall: UCallExpression): Interaction? {
         val psiMethod = uCall.resolve()
         if (psiMethod != null) {
