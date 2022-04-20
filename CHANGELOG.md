@@ -2,6 +2,31 @@
 
 # RSocket plugin Changelog
 
+## [0.10.1]
+
+### Added
+                  
+- Update to RSocket Java SDK 1.1.2
+- Add `application/graphql` for GraphQL over RSocket: https://docs.spring.io/spring-graphql/docs/1.0.0-RC1/reference/html/#server-rsocket 
+          
+```http request
+### GraphQL over RSocket
+RSOCKET graphql
+Host: ws://localhost:8080/rsocket
+Content-Type: application/graphql
+
+query {
+    findBook(id: "book-1") { id name }
+}
+
+### GraphQL subscription over RSocket Stream
+STREAM graphql
+Host: ws://localhost:8080/rsocket
+Content-Type: application/graphql
+
+subscription { greetings }
+```
+
 ## [0.10.0]
 
 ### Added
