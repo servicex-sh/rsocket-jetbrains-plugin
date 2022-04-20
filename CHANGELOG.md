@@ -5,10 +5,11 @@
 ## [0.10.1]
 
 ### Added
-                  
+
 - Update to RSocket Java SDK 1.1.2
-- Add `application/graphql` for GraphQL over RSocket: https://docs.spring.io/spring-graphql/docs/1.0.0-RC1/reference/html/#server-rsocket 
-          
+- RSocket Kotlin support: `io.rsocket.kotlin.RSocket` annotated as request request
+- Add `application/graphql` for GraphQL over RSocket: https://docs.spring.io/spring-graphql/docs/1.0.0-RC1/reference/html/#server-rsocket
+
 ```http request
 ### GraphQL over RSocket
 RSOCKET graphql
@@ -31,8 +32,8 @@ subscription { greetings }
 
 ### Added
 
-- Add application/graphql support: 
-          
+- Add application/graphql support:
+
 ```http request
 ### GraphQL over RSocket
 RSOCKET graphql
