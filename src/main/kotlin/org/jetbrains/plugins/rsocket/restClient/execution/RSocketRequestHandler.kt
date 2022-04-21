@@ -24,6 +24,13 @@ class RSocketRequestHandler : RequestHandler<RSocketRequest> {
             "STREAM" -> {
                 rsocketRequestManager.requestStream(request)
             }
+            "GRAPHQLRS" -> {
+                if (request.graphqlOperationName == "subscription") {
+                    rsocketRequestManager.requestStream(request)
+                } else {
+                    rsocketRequestManager.requestResponse(request)
+                }
+            }
             else -> {
                 object : CommonClientResponse {
                     override val body: CommonClientResponseBody
