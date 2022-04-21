@@ -1,6 +1,7 @@
 package org.jetbrains.plugins.rsocket.restClient.execution
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.intellij.httpClient.execution.common.CommonClientRequest
 import com.intellij.util.queryParameters
 import io.rsocket.metadata.WellKnownMimeType
@@ -20,6 +21,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     val authorization: String?
     val userAgent: String?
     val bodyText: String?
+    var graphqlOperationName = "request"
 
     init {
         rsocketURI = URI.create(URL!!)
@@ -32,19 +34,30 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
         metadata = headers["Metadata"]
         // graphql convert https://github.com/spring-projects/spring-graphql/issues/339
         var tempDataMimeType = headers["Content-Type"] ?: WellKnownMimeType.APPLICATION_JSON.string
-        var tempBody = textToSend
-        if (tempDataMimeType == "application/graphql") {
+        var tempBody = textToSend!!
+        if (httpMethod == "GRAPHQLRS" || tempDataMimeType == "application/graphql") {
             val objectMapper = ObjectMapper()
-            val jsonRequest = mutableMapOf<String, Any>()
-            jsonRequest["query"] = textToSend!!
-            val graphqlVariables = getHeadValue("x-graphql-variables")
-            if (graphqlVariables != null) {
-                jsonRequest["variables"] = objectMapper.readValue(graphqlVariables, Map::class.java)
+            if (tempDataMimeType == "application/graphql") {
+                if (tempBody.startsWith("subscription")) {
+                    graphqlOperationName = "subscription"
+                }
+                val jsonRequest = mutableMapOf<String, Any>()
+                jsonRequest["query"] = tempBody
+                val graphqlVariables = getHeadValue("x-graphql-variables")
+                if (graphqlVariables != null) {
+                    jsonRequest["variables"] = objectMapper.readValue(graphqlVariables, Map::class.java)
+                }
+                tempBody = objectMapper.writeValueAsString(jsonRequest)
+                tempDataMimeType = "application/json"
+            } else if (tempDataMimeType.contains("json")) {  // application/graphql+json is not well-known type now
+                tempDataMimeType = "application/json"
+                val document = objectMapper.readValue<Map<String, Any>>(tempBody)
+                if (document.contains("query")) {
+                    if (document["query"].toString().contains("subscription")) {
+                        graphqlOperationName = "subscription"
+                    }
+                }
             }
-            tempBody = objectMapper.writeValueAsString(jsonRequest)
-            tempDataMimeType = "application/json"
-        } else if (tempDataMimeType == "application/graphql+json") {  // application/graphql+json is not well-known type now
-            tempDataMimeType = "application/json"
         }
         this.dataMimeType = tempDataMimeType
         this.bodyText = tempBody
