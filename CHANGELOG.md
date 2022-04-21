@@ -8,11 +8,11 @@
 
 - Update to RSocket Java SDK 1.1.2
 - RSocket Kotlin support: `io.rsocket.kotlin.RSocket` annotated as request request
-- Add `application/graphql` for GraphQL over RSocket: https://docs.spring.io/spring-graphql/docs/1.0.0-RC1/reference/html/#server-rsocket
+- Add `GRAPHQLRS` method for GraphQL over RSocket: https://docs.spring.io/spring-graphql/docs/1.0.0-RC1/reference/html/#server-rsocket
 
 ```http request
 ### GraphQL over RSocket
-RSOCKET graphql
+GRAPHQLRS graphql
 Host: ws://localhost:8080/rsocket
 Content-Type: application/graphql
 
@@ -21,7 +21,7 @@ query {
 }
 
 ### GraphQL subscription over RSocket Stream
-STREAM graphql
+GRAPHQLRS graphql
 Host: ws://localhost:8080/rsocket
 Content-Type: application/graphql
 
