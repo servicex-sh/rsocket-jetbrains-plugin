@@ -15,6 +15,7 @@ The following features are available for RSocket:
 * Transportation support: TCP and WebSocket
 * RSocket Endpoint support: Java and Kotlin
 * Line marker for methods in RSocket class with API test
+* GraphQL over RSocket support
 
 ### RSocket requests demo
 
