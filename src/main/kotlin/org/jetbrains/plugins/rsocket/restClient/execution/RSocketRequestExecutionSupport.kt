@@ -24,4 +24,8 @@ class RSocketRequestExecutionSupport : RequestExecutionSupport<RSocketRequest> {
     override fun supportedMethods(): Collection<String> {
         return RSOCKET_REQUEST_TYPES
     }
+
+    fun getNeedsHttpScheme(): Boolean {
+        return false;
+    }
 }
