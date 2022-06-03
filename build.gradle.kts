@@ -9,7 +9,7 @@ plugins {
     // Kotlin support
     id("org.jetbrains.kotlin.jvm") version "1.6.10"
     // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij") version "1.5.3"
+    id("org.jetbrains.intellij") version "1.6.0"
     // Gradle Changelog Plugin
     id("org.jetbrains.changelog") version "1.3.1"
 }
@@ -33,7 +33,7 @@ intellij {
 }
 
 dependencies {
-    implementation(platform("io.projectreactor:reactor-bom:2020.0.17"))
+    implementation(platform("io.projectreactor:reactor-bom:2020.0.19"))
     implementation("io.rsocket:rsocket-core:1.1.2")
     implementation("io.rsocket:rsocket-transport-netty:1.1.2")
     implementation("io.rsocket.broker:rsocket-broker-frames:0.3.0")
