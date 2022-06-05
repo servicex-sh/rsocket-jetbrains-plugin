@@ -81,3 +81,4 @@ If you want to use GraphQL variables, please add `X-GraphQL-Variables: {id: 1}` 
 * RSocket: [https://rsocket.io/](https://rsocket.io/)
 * rsocket-kotlin: https://github.com/rsocket/rsocket-kotlin
 * Language Injection: https://plugins.jetbrains.com/docs/intellij/language-injection.html
+* Schema extension for HTTP Client: https://youtrack.jetbrains.com/issue/IDEA-290191/Schema-extension-for-HTTP-Client
