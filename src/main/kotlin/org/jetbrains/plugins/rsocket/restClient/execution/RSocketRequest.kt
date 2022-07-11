@@ -34,8 +34,9 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
         metadata = headers["Metadata"]
         // graphql convert https://github.com/spring-projects/spring-graphql/issues/339
         var tempDataMimeType = headers["Content-Type"] ?: WellKnownMimeType.APPLICATION_JSON.string
-        var tempBody = textToSend!!
-        if (httpMethod == "GRAPHQLRS" || tempDataMimeType == "application/graphql") {
+        var tempBody = textToSend ?: ""
+        //GraphQL over RSocket
+        if (httpMethod == "GRAPHQL" || tempDataMimeType == "application/graphql") {
             val objectMapper = ObjectMapper()
             if (tempDataMimeType == "application/graphql") {
                 if (tempBody.startsWith("subscription")) {
