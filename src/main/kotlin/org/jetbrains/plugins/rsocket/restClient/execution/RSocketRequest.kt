@@ -66,8 +66,11 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
 
     fun routingMetadata(): List<String> {
         var path = rsocketURI.path ?: ""
-        if (rsocketURI.scheme.contains("+ws") && path.startsWith("/rsocket")) {
-            path = path.substring(8)
+        if (rsocketURI.scheme.contains("+ws")) {
+            val endpointPath = getWebSocketEndpointPath(rsocketURI.toString())
+            if (endpointPath.isNotEmpty()) {
+                path = path.substring(endpointPath.length)
+            }
         }
         if (path.startsWith("/")) {
             path = path.substring(1)
@@ -96,8 +99,26 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
         var connectionURL = rsocketURI.toString()
         if (connectionURL.startsWith("rsocket+ws")) { //rsocket as ws path
             connectionURL = connectionURL.substring(8)
+            // for example:  ws://127.0.0.1:8080/rsocket/demo
+            val endpointPath = getWebSocketEndpointPath(connectionURL)
+            if (endpointPath.isNotEmpty()) {
+                connectionURL = connectionURL.substring(0, connectionURL.indexOf(endpointPath) + endpointPath.length)
+            }
         }
         return URI.create(connectionURL)
+    }
+
+    private fun getWebSocketEndpointPath(url: String): String {
+        val offset1 = url.indexOf('/', 7)
+        if (offset1 > 0) {
+            val offset2 = url.indexOf('/', offset1 + 1)
+            if (offset2 < 0) {
+                return url.substring(offset1)
+            } else {
+                return url.substring(offset1, offset2)
+            }
+        }
+        return ""
     }
 
     fun body(): ByteArray {
@@ -105,7 +126,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
             ByteArray(0)
         } else if (bodyText.startsWith("data:")) {
             val base64Text = bodyText.substring(bodyText.indexOf(",") + 1).trim()
-            Base64.getDecoder().decode(base64Text);
+            Base64.getDecoder().decode(base64Text)
         } else {
             if (dataMimeType.startsWith("application/json") && bodyText.startsWith("\"")) {
                 bodyText.trim('"').toByteArray(Charsets.UTF_8)
