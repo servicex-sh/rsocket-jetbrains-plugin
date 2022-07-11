@@ -24,7 +24,7 @@ class RSocketRequestHandler : RequestHandler<RSocketRequest> {
             "STREAM" -> {
                 rsocketRequestManager.requestStream(request)
             }
-            "GRAPHQLRS" -> {
+            "GRAPHQL" -> {
                 if (request.graphqlOperationName == "subscription") {
                     rsocketRequestManager.requestStream(request)
                 } else {
