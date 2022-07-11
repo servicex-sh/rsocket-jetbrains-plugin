@@ -25,7 +25,8 @@ class RSocketRequestExecutionSupport : RequestExecutionSupport<RSocketRequest> {
         return RSOCKET_REQUEST_TYPES
     }
 
-    fun getNeedsHttpScheme(): Boolean {
-        return false;
-    }
+    override val needsScheme: Boolean
+        get() = false
+    override val supportedSchemes: List<String>
+        get() = listOf("tcp", "ws", "wss")
 }
