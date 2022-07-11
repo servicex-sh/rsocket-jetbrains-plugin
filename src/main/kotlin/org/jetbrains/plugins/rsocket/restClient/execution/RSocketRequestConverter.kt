@@ -65,6 +65,8 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
                 .replace("ws://", "rsocket+ws://")
                 .replace("wss://", "rsocket+wss://")
                 .replace("tcp://", "rsocket://")
+                .replace("rsocketws://", "rsocket+ws://")
+                .replace("rsocketwss://", "rsocket+wss://")
         }
         return tempUri
     }
