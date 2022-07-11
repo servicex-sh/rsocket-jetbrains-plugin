@@ -44,7 +44,8 @@ class RSocketEndpoint(val requestType: String, val routing: String, private val 
             OasEndpointPath(
                 routing,
                 "RSocket Service Call",
-                listOf(OasOperation(OasHttpMethod.POST, listOf(), null, routing, requestType, false, emptyList(), emptyList()))
+                listOf(OasOperation(OasHttpMethod.POST, listOf(), null,
+                    routing, requestType, false, emptyList(), null, emptyList()))
             )
         )
         else -> {
