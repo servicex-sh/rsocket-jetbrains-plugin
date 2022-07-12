@@ -9,7 +9,7 @@ plugins {
     // Kotlin support
     id("org.jetbrains.kotlin.jvm") version "1.6.10"
     // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij") version "1.6.0"
+    id("org.jetbrains.intellij") version "1.7.0"
     // Gradle Changelog Plugin
     id("org.jetbrains.changelog") version "1.3.1"
 }
@@ -25,7 +25,8 @@ repositories {
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     pluginName.set(properties("pluginName"))
-    version.set(properties("platformVersion"))
+    // version.set(properties("platformVersion"))
+    localPath.set(properties("platformLocalPath"))
     type.set(properties("platformType"))
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
@@ -33,7 +34,7 @@ intellij {
 }
 
 dependencies {
-    implementation(platform("io.projectreactor:reactor-bom:2020.0.19"))
+    implementation(platform("io.projectreactor:reactor-bom:2020.0.20"))
     implementation("io.rsocket:rsocket-core:1.1.2")
     implementation("io.rsocket:rsocket-transport-netty:1.1.2")
     implementation("io.rsocket.broker:rsocket-broker-frames:0.3.0")
