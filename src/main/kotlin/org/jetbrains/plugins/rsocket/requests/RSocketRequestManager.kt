@@ -107,7 +107,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
                 }
                 .subscribe {
                     val data = convertPayloadText(dataMimeType, it)
-                    shared.tryEmit(CommonClientResponseBody.TextStream.Message.Chunk(data + "\n\n"))
+                    shared.tryEmit(CommonClientResponseBody.TextStream.Message.Content.Chunk(data + "\n\n"))
                 }
         } catch (e: Exception) {
             return RSocketClientResponse(
