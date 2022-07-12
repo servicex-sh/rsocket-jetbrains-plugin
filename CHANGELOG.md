@@ -2,6 +2,29 @@
 
 # RSocket plugin Changelog
 
+## [0.11.0]
+
+### Added
+
+- Compatible with JetBrains IDEs 2022.2
+- GraphQL over RSocket compatible with new HTTP Client
+
+```
+GRAPHQL rsocketws://localhost:8080/rsocket/graphql
+
+query demo {
+    bookById(id: "book-1") {
+        id
+        name
+        pageCount
+        author {
+            firstName
+            lastName
+        }
+    }
+}
+```
+
 ## [0.10.2]
 
 ### Added
