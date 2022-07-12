@@ -33,11 +33,12 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
         setupData = headers["Setup-Data"]
         metadata = headers["Metadata"]
         // graphql convert https://github.com/spring-projects/spring-graphql/issues/339
-        var tempDataMimeType = headers["Content-Type"] ?: WellKnownMimeType.APPLICATION_JSON.string
+        var tempDataMimeType = headers["Content-Type"]
         var tempBody = textToSend ?: ""
         //GraphQL over RSocket
-        if (httpMethod == "GRAPHQL" || tempDataMimeType == "application/graphql") {
+        if (httpMethod == "GRAPHQL") {
             val objectMapper = ObjectMapper()
+            tempDataMimeType = tempDataMimeType ?: "application/graphql"
             if (tempDataMimeType == "application/graphql") {
                 if (tempBody.startsWith("subscription")) {
                     graphqlOperationName = "subscription"
@@ -60,7 +61,7 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
                 }
             }
         }
-        this.dataMimeType = tempDataMimeType
+        this.dataMimeType = tempDataMimeType ?: WellKnownMimeType.APPLICATION_JSON.string
         this.bodyText = tempBody
     }
 
@@ -109,10 +110,10 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     }
 
     private fun getWebSocketEndpointPath(url: String): String {
-       val offset1= if(url.startsWith("rsocket+")) {
-           url.indexOf('/', 15)
-        }  else {
-           url.indexOf('/', 7)
+        val offset1 = if (url.startsWith("rsocket+")) {
+            url.indexOf('/', 15)
+        } else {
+            url.indexOf('/', 7)
         }
         if (offset1 > 0) {
             val offset2 = url.indexOf('/', offset1 + 1)
