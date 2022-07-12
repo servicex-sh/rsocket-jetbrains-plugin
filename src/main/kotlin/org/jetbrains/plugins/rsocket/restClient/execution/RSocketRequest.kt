@@ -45,6 +45,19 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
                 }
                 val jsonRequest = mutableMapOf<String, Any>()
                 jsonRequest["query"] = tempBody
+                // check body + variables json
+                val offset1 = tempBody.lastIndexOf('{')
+                val offset2 = tempBody.lastIndexOf('}')
+                if (offset2 > offset1) {
+                    val jsonText = tempBody.substring(offset1, offset2 + 1)
+                    if (jsonText.contains('"')) {
+                        try {
+                            jsonRequest["variables"] = objectMapper.readValue(jsonText, Map::class.java)
+                            jsonRequest["query"] = tempBody.subSequence(0, offset1)
+                        } catch (ignore: Exception) {
+                        }
+                    }
+                }
                 val graphqlVariables = getHeadValue("x-graphql-variables")
                 if (graphqlVariables != null) {
                     jsonRequest["variables"] = objectMapper.readValue(graphqlVariables, Map::class.java)
