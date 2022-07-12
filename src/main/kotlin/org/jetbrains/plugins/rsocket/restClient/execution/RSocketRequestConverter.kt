@@ -59,14 +59,15 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
                 }
             }
         }
-        if (!tempUri.startsWith("rsocket")) {
+        if (tempUri.startsWith("rsocketws://") || tempUri.startsWith("rsocketwss://")) {
+            tempUri = tempUri.replace("rsocketws://", "rsocket+ws://")
+                .replace("rsocketwss://", "rsocket+wss://")
+        } else if (!tempUri.startsWith("rsocket://")) {
             tempUri = tempUri.replace("http://", "rsocket+ws://")
                 .replace("https://", "rsocket+wss://")
                 .replace("ws://", "rsocket+ws://")
                 .replace("wss://", "rsocket+wss://")
                 .replace("tcp://", "rsocket://")
-                .replace("rsocketws://", "rsocket+ws://")
-                .replace("rsocketwss://", "rsocket+wss://")
         }
         return tempUri
     }
