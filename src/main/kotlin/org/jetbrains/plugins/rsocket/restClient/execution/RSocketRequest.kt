@@ -109,7 +109,11 @@ class RSocketRequest(override val URL: String?, override val httpMethod: String?
     }
 
     private fun getWebSocketEndpointPath(url: String): String {
-        val offset1 = url.indexOf('/', 7)
+       val offset1= if(url.startsWith("rsocket+")) {
+           url.indexOf('/', 15)
+        }  else {
+           url.indexOf('/', 7)
+        }
         if (offset1 > 0) {
             val offset2 = url.indexOf('/', offset1 + 1)
             if (offset2 < 0) {
