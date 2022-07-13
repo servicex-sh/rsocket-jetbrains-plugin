@@ -19,7 +19,7 @@ class RSocketUrlResolver(private val project: Project) : UrlResolver {
     override val authorityHints: List<Authority.Exact> = listOf()
     override val supportedSchemes: List<String>
         get() {
-            return listOf("rsocket://", "rsocket+ws://", "rsocket+wss://")
+            return listOf("rsocket://", "rsocketws://", "rsocketwss://")
         }
 
     override fun getVariants(): Iterable<UrlTargetInfo> {
@@ -27,7 +27,7 @@ class RSocketUrlResolver(private val project: Project) : UrlResolver {
     }
 
     override fun resolve(request: UrlResolveRequest): Iterable<UrlTargetInfo> {
-        return listOf(RSocketUrlTargetInfo(project, request.u))
+        return listOf(RSocketUrlTargetInfo(project, request.path))
     }
 
 }
