@@ -28,7 +28,7 @@ class RSocketRequestConverter : RequestConverter<RSocketRequest>() {
             requestType = "RPC"
         }
         //clean url and header
-        val host = headers.getOrDefault("Host", "localhost")
+        val host = headers.getOrDefault("URI", headers.getOrDefault("Host", "localhost"))
         url = convertToRSocketUrl(url, host)
         return RSocketRequest(url, requestType, requestBody, headers)
     }
