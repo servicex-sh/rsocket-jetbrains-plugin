@@ -2,6 +2,13 @@
 
 # RSocket plugin Changelog
 
+## [0.12.0]
+
+### Added
+
+- Add URI header support: `URI: ws://localhost:8080/rsocket`
+- Add [RSocket Interface](https://docs.spring.io/spring-framework/docs/6.0.0-SNAPSHOT/reference/html/web-reactive.html#rsocket-interface) annotator support: `@RSocketExchange`
+ 
 ## [0.11.0]
 
 ### Added
