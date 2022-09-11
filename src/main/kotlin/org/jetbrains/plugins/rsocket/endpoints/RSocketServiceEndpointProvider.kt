@@ -72,7 +72,7 @@ class RSocketServiceEndpointProvider : EndpointsProvider<RSocketEndpointsGroup, 
     }
 
     override fun getModificationTracker(project: Project): ModificationTracker {
-        return PsiModificationTracker.SERVICE.getInstance(project).forLanguage(JavaLanguage.INSTANCE)
+        return PsiModificationTracker.getInstance(project).forLanguage(JavaLanguage.INSTANCE)
     }
 
     override fun getStatus(project: Project): EndpointsProvider.Status = when {
