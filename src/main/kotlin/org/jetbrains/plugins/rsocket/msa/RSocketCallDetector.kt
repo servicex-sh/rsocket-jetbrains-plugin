@@ -11,22 +11,27 @@ import org.strangeway.msa.frameworks.hasLibraryClass
 
 class RSocketCallDetector : CallDetector {
     private val interaction: Interaction = FrameworkInteraction(InteractionType.REQUEST, "RSocket")
-    private val rsocketServiceAnnotations = listOf("com.alibaba.rsocket.RSocketServiceInterface")
+    private val rsocketServiceAnnotations = listOf("com.alibaba.rsocket.RSocketServiceInterface", "org.springframework.messaging.rsocket.service.RSocketExchange")
+    private val rsocketExchangeAnnotations = listOf("org.springframework.messaging.rsocket.service.RSocketExchange")
     private val rsocketStubInterfaces = listOf("io.rsocket.RSocket", "io.rsocket.kotlin.RSocket", "org.springframework.messaging.rsocket.RSocketRequester")
     private val graphqlRSocketStubMethods = listOf("retrieve", "retrieveSubscription", "execute", "executeSubscription")
     override fun getCallInteraction(project: Project, uCall: UCallExpression): Interaction? {
         val psiMethod = uCall.resolve()
         if (psiMethod != null) {
-            val psiClass = psiMethod.containingClass
-            if (psiClass != null) {
-                val psiClassFullName = psiClass.qualifiedName!!
-                if (isRSocketStub(psiClassFullName)) {
-                    return interaction
-                } else if (psiClass.isInterface && AnnotationUtil.isAnnotated(psiClass, rsocketServiceAnnotations, 0)) {
-                    return interaction
-                } else if (psiClassFullName == "org.springframework.graphql.client.GraphQlClient.RequestSpec") {
-                    if (graphqlRSocketStubMethods.contains(psiMethod.name)) {
+            if (AnnotationUtil.isAnnotated(psiMethod, rsocketExchangeAnnotations, 0)) {
+                return interaction
+            } else {
+                val psiClass = psiMethod.containingClass
+                if (psiClass != null) {
+                    val psiClassFullName = psiClass.qualifiedName!!
+                    if (isRSocketStub(psiClassFullName)) {
                         return interaction
+                    } else if (psiClass.isInterface && AnnotationUtil.isAnnotated(psiClass, rsocketServiceAnnotations, 0)) {
+                        return interaction
+                    } else if (psiClassFullName == "org.springframework.graphql.client.GraphQlClient.RequestSpec") {
+                        if (graphqlRSocketStubMethods.contains(psiMethod.name)) {
+                            return interaction
+                        }
                     }
                 }
             }
