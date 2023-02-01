@@ -9,6 +9,7 @@ import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.psi.PsiMethod
+import org.jetbrains.plugins.rsocket.RSOCKET_REQUEST_TYPES
 import org.jetbrains.plugins.rsocket.rsocketIcon
 
 
@@ -27,9 +28,12 @@ class RSocketEndpoint(val requestType: String, val routing: String, private val 
         }
     }
 
-    override val endpointMethod: String = requestType
-
     override val endpointMethodOrder = 0
+
+    override val endpointMethodPresentation: String
+        get() = requestType
+    override val endpointMethods: List<String>
+        get() = RSOCKET_REQUEST_TYPES.toList()
 
     override fun getData(dataId: String): Any? = when (dataId) {
         CommonDataKeys.PSI_ELEMENT.name -> element
