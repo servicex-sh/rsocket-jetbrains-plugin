@@ -9,7 +9,7 @@ class RSocketHeadersInspectionService(project: Project) {
         val inspectionProfileManager = ProjectInspectionProfileManager.getInstance(project)
         val inspectionToolWrapper = inspectionProfileManager.currentProfile.getInspectionTool("IncorrectHttpHeaderInspection", project)
         val httpHeaderInspection = inspectionToolWrapper?.tool as HttpRequestIncorrectHttpHeaderInspection
-        val customHeaders = httpHeaderInspection.getCustomHeaders()
+        val customHeaders = httpHeaderInspection.getCustomHeaders() as MutableSet<String>
         if (!(customHeaders.contains("X-AliBroker") || customHeaders.contains("X-ServiceName"))) {
             customHeaders.add("X-AliBroker")
             customHeaders.add("X-ServiceName")
