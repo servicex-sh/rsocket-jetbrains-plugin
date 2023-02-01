@@ -2,7 +2,7 @@
 
 # RSocket plugin Changelog
 
-## [0.14.1]
+## [0.15.0]
 
 ### Added
 
