@@ -2,6 +2,13 @@
 
 # RSocket plugin Changelog
 
+## [0.16.0]
+
+### Added
+
+- Compatible with JetBrains IDE 2023.2
+- Update to reactor-bom 2020.0.32
+
 ## [0.15.0]
 
 ### Added
