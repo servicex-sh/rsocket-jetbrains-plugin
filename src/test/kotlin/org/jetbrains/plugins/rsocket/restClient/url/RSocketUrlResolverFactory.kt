@@ -16,7 +16,6 @@ class RSocketUrlResolverFactory : UrlResolverFactory {
 }
 
 class RSocketUrlResolver(private val project: Project) : UrlResolver {
-    override val authorityHints: List<Authority.Exact> = listOf()
     override val supportedSchemes: List<String>
         get() {
             return listOf("rsocket://", "rsocketws://", "rsocketwss://")
@@ -30,6 +29,9 @@ class RSocketUrlResolver(private val project: Project) : UrlResolver {
         return listOf(RSocketUrlTargetInfo(project, request.path))
     }
 
+    override fun getAuthorityHints(schema: String?): List<Authority.Exact> {
+        return listOf()
+    }
 }
 
 class RSocketUrlTargetInfo(private val project: Project, private val urlPath: UrlPath) : UrlTargetInfo {
