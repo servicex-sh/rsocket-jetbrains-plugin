@@ -29,7 +29,7 @@ class RSocketRequestConvertToRscIntention : BaseElementAtCaretIntentionAction() 
 
     override fun invoke(project: Project, editor: Editor, element: PsiElement) {
         val httpRequest = PsiTreeUtil.getParentOfType(element, HttpRequest::class.java)!!
-        val substitutor = HttpRequestVariableSubstitutor.getDefault(project);
+        val substitutor = HttpRequestVariableSubstitutor.getDefault(project, element.containingFile)
         val headers = httpRequest.headerFieldList.associate { it.name to it.getValue(substitutor) }
         var requestType = httpRequest.httpMethod
         if (requestType == "RSOCKET") {
