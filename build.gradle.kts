@@ -7,9 +7,9 @@ plugins {
     // Java support
     id("java")
     // Kotlin support
-    id("org.jetbrains.kotlin.jvm") version "1.8.10"
+    id("org.jetbrains.kotlin.jvm") version "1.9.20"
     // Gradle IntelliJ Plugin
-    id("org.jetbrains.intellij") version "1.13.3"
+    id("org.jetbrains.intellij") version "1.16.1"
     // Gradle Changelog Plugin
     id("org.jetbrains.changelog") version "1.3.1"
 }
@@ -22,10 +22,18 @@ repositories {
     mavenCentral()
 }
 
+// Set the JVM language level used to compile sources and generate files - Java 17 is required since 2022.2
+kotlin {
+    jvmToolchain {
+        this.languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     pluginName.set(properties("pluginName"))
-    version.set(properties("platformVersion"))
+    //version.set(properties("platformVersion"))
+    localPath.set("/Users/linux_china/Applications/IntelliJ IDEA Ultimate.app/Contents")
     type.set(properties("platformType"))
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
@@ -33,9 +41,11 @@ intellij {
 }
 
 dependencies {
-    implementation(platform("io.projectreactor:reactor-bom:2020.0.32"))
-    implementation("io.rsocket:rsocket-core:1.1.3")
-    implementation("io.rsocket:rsocket-transport-netty:1.1.3")
+    implementation(platform("io.netty:netty-bom:4.1.101.Final"))
+    implementation(platform("io.projectreactor:reactor-bom:2020.0.38"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.15.2"))
+    implementation("io.rsocket:rsocket-core:1.1.4")
+    implementation("io.rsocket:rsocket-transport-netty:1.1.4")
     implementation("io.rsocket.broker:rsocket-broker-frames:0.3.0")
 }
 
@@ -44,6 +54,9 @@ configurations.implementation {
     exclude(group = "io.netty", module = "netty-resolver-dns-native-macos")
     exclude(group = "io.projectreactor.netty.incubator", module = "reactor-netty-incubator-quic")
     exclude(group = "io.projectreactor.netty", module = "reactor-netty-http-brave")
+    exclude(group = "com.fasterxml.jackson.core", module = "jackson-annotations")
+    exclude(group = "com.fasterxml.jackson.core", module = "jackson-databind")
+    exclude(group = "com.fasterxml.jackson.core", module = "jackson-core")
 }
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
