@@ -8,14 +8,14 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends optional="true" config-file="rsocket-withJava.xml">com.intellij.java</depends>
-    <depends optional="true" config-file="rsocket-msa.xml">org.strangeway.msa</depends>
+    <!-- <depends optional="true" config-file="rsocket-msa.xml">org.strangeway.msa</depends>-->
     <!--suppress PluginXmlValidity -->
     <dependencies>
         <plugin id="com.jetbrains.restClient"/>
     </dependencies>
 
     <extensions defaultExtensionNs="com.intellij">
-        <projectService preload="true" serviceImplementation="org.jetbrains.plugins.rsocket.codeInsight.RSocketHeadersInspectionService"/>
+        <projectService serviceImplementation="org.jetbrains.plugins.rsocket.codeInsight.RSocketHeadersInspectionService"/>
         <projectService serviceImplementation="org.jetbrains.plugins.rsocket.requests.RSocketRequestManager"/>
         <httpClient.requestExecutionSupport implementation="org.jetbrains.plugins.rsocket.restClient.execution.RSocketRequestExecutionSupport"/>
         <httpClient.requestExecutionSupport implementation="org.jetbrains.plugins.rsocket.restClient.execution.RSocketGraphQLRequestExecutionSupport"/>
