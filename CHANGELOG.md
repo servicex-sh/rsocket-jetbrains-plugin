@@ -2,6 +2,12 @@
 
 # RSocket plugin Changelog
 
+## [0.17.0]
+
+### Added
+
+- Compatible with JetBrains IDE 2023.3
+
 ## [0.16.0]
 
 ### Added
