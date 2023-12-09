@@ -3,6 +3,8 @@ package org.jetbrains.plugins.rsocket.msa
 import com.intellij.codeInsight.AnnotationUtil
 import com.intellij.openapi.project.Project
 import org.jetbrains.uast.UCallExpression
+/*
+
 import org.strangeway.msa.db.InteractionType
 import org.strangeway.msa.frameworks.CallDetector
 import org.strangeway.msa.frameworks.FrameworkInteraction
@@ -46,4 +48,4 @@ class RSocketCallDetector : CallDetector {
     private fun isRSocketStub(classFullName: String): Boolean {
         return rsocketStubInterfaces.contains(classFullName)
     }
-}
+}*/
