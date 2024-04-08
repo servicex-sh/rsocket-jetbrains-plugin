@@ -40,8 +40,8 @@ intellij {
 }
 
 dependencies {
-    implementation(platform("io.netty:netty-bom:4.1.99.Final"))
-    implementation(platform("io.projectreactor:reactor-bom:2020.0.38"))
+    implementation(platform("io.netty:netty-bom:4.1.108.Final"))
+    implementation(platform("io.projectreactor:reactor-bom:2020.0.41"))
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.15.2"))
     implementation("io.rsocket:rsocket-core:1.1.4")
     implementation("io.rsocket:rsocket-transport-netty:1.1.4")
