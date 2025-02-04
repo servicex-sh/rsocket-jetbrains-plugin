@@ -2,6 +2,13 @@
 
 # RSocket plugin Changelog
 
+## [0.19.0]
+
+### Added
+
+- Compatible with JetBrains IDE 2025.1
+- Update to rsocket 1.1.5
+
 ## [0.18.0]
 
 ### Added
@@ -45,7 +52,7 @@
 
 - Add URI header support: `URI: ws://localhost:8080/rsocket`
 - Add [RSocket Interface](https://docs.spring.io/spring-framework/docs/6.0.0-SNAPSHOT/reference/html/web-reactive.html#rsocket-interface) annotator support: `@RSocketExchange`
- 
+
 ## [0.11.0]
 
 ### Added
