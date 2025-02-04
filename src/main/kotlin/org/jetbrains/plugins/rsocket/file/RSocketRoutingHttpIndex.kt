@@ -6,7 +6,6 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.*
 import com.intellij.util.io.EnumeratorStringDescriptor
 import com.intellij.util.io.KeyDescriptor
-import org.jetbrains.kotlin.utils.keysToMap
 import org.jetbrains.plugins.rsocket.RSOCKET_REQUEST_TYPES
 
 class RSocketRoutingHttpIndex : ScalarIndexExtension<String>() {
@@ -23,7 +22,7 @@ class RSocketRoutingHttpIndex : ScalarIndexExtension<String>() {
                         routing.substring(routing.lastIndexOf('/') + 1)
                     }
                     routing
-                }.keysToMap { null }
+                }.associateWith { null }
 
         }
     }
