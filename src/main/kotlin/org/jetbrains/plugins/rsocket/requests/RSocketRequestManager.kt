@@ -21,6 +21,7 @@ import io.rsocket.broker.frames.Address
 import io.rsocket.broker.frames.AddressFlyweight
 import io.rsocket.broker.frames.RouteSetupFlyweight
 import io.rsocket.core.RSocketConnector
+import io.rsocket.metadata.AuthMetadataCodec
 import io.rsocket.metadata.CompositeMetadataCodec.encodeAndAddMetadata
 import io.rsocket.metadata.TaggingMetadataCodec
 import io.rsocket.metadata.WellKnownMimeType
@@ -59,7 +60,10 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         } finally {
             clientRSocket?.dispose()
         }
-        return RSocketClientResponse(CommonClientResponseBody.Text(text ?: "", bodyFileHint(rsocketRequest)), dataMimeType)
+        return RSocketClientResponse(
+            CommonClientResponseBody.Text(text ?: "", bodyFileHint(rsocketRequest)),
+            dataMimeType
+        )
     }
 
     fun fireAndForget(rsocketRequest: RSocketRequest): CommonClientResponse {
@@ -94,7 +98,8 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             replay = 1000,
             onBufferOverflow = BufferOverflow.DROP_OLDEST
         )
-        val textStream = CommonClientResponseBody.TextStream(shared, bodyFileHint(rsocketRequest)).withConnectionDisposable(disposeRSocket)
+        val textStream = CommonClientResponseBody.TextStream(shared, bodyFileHint(rsocketRequest))
+            .withConnectionDisposable(disposeRSocket)
         try {
             clientRSocket = createRSocket(rsocketRequest)
             fluxDisposable = clientRSocket.requestStream(createPayload(rsocketRequest))
@@ -123,7 +128,8 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             var clientRSocket: RSocket? = null
             try {
                 clientRSocket = createRSocket(rsocketRequest)
-                val payload = DefaultPayload.create(Unpooled.EMPTY_BUFFER, Unpooled.wrappedBuffer(rsocketRequest.body()))
+                val payload =
+                    DefaultPayload.create(Unpooled.EMPTY_BUFFER, Unpooled.wrappedBuffer(rsocketRequest.body()))
                 clientRSocket.metadataPush(payload).block()
             } catch (e: Exception) {
                 return RSocketClientResponse(
@@ -160,7 +166,7 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         }
         var setupPayload: Payload? = null
         if (rsocketRequest.isAliBroker()) {
-            setupPayload = createSetupPayloadForAliBroker()
+            setupPayload = createSetupPayloadForAliBroker(rsocketRequest)
         } else if (rsocketRequest.isSpringBroker()) {
             setupPayload = createSetupPayloadForSpringBroker(Id.from(appId))
         }
@@ -195,11 +201,28 @@ class RSocketRequestManager(private val project: Project) : Disposable {
         return DefaultPayload.create(Unpooled.EMPTY_BUFFER, setupMetadata)
     }
 
-    private fun createSetupPayloadForAliBroker(): Payload {
+    private fun createSetupPayloadForAliBroker(rSocketRequest: RSocketRequest): Payload {
         val allocator = ByteBufAllocator.DEFAULT
         val setupMetadata: CompositeByteBuf = allocator.compositeBuffer()
         val appInfo = """{"name": "rsocket-jetbrains-plugin"}""".toByteArray()
-        encodeAndAddMetadata(setupMetadata, allocator, "message/x.rsocket.application+json", Unpooled.wrappedBuffer(appInfo))
+        encodeAndAddMetadata(
+            setupMetadata,
+            allocator,
+            "message/x.rsocket.application+json",
+            Unpooled.wrappedBuffer(appInfo)
+        )
+        if (rSocketRequest.authorization != null) {
+            val authorization = rSocketRequest.authorization!!
+            if (authorization.startsWith("Bearer") || authorization.startsWith("bearer")) {
+                val token = authorization.substring(7).trim()
+                encodeAndAddMetadata(
+                    setupMetadata,
+                    allocator,
+                    "message/x.rsocket.authentication.v0",
+                    AuthMetadataCodec.encodeBearerMetadata(allocator, token.toCharArray())
+                )
+            }
+        }
         return DefaultPayload.create(Unpooled.EMPTY_BUFFER, setupMetadata)
     }
 
@@ -276,7 +299,13 @@ class RSocketRequestManager(private val project: Project) : Disposable {
             }
         }
         val address = builder.build()
-        val byteBuf = AddressFlyweight.encode(ByteBufAllocator.DEFAULT, address.originRouteId, address.metadata, address.tags, address.flags)
+        val byteBuf = AddressFlyweight.encode(
+            ByteBufAllocator.DEFAULT,
+            address.originRouteId,
+            address.metadata,
+            address.tags,
+            address.flags
+        )
         encodeAndAddMetadata(metadataHolder, ByteBufAllocator.DEFAULT, MimeTypes.BROKER_FRAME_MIME_TYPE, byteBuf)
     }
 
