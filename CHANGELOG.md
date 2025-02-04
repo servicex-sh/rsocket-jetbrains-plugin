@@ -8,6 +8,7 @@
 
 - Compatible with JetBrains IDE 2025.1
 - Update to rsocket 1.1.5
+- Add Bearer token support for broker
 
 ## [0.18.0]
 
