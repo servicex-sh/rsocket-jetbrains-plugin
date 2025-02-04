@@ -9,7 +9,6 @@ import com.intellij.psi.util.PsiModificationTracker
 import org.jetbrains.plugins.rsocket.file.RSocketServiceFileIndex
 import org.jetbrains.plugins.rsocket.rsocketIcon
 
-@Suppress("UnstableApiUsage")
 class RSocketServiceEndpointProvider : EndpointsProvider<RSocketEndpointsGroup, RSocketEndpoint> {
 
     companion object {
